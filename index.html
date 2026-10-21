@@ -392,6 +392,19 @@ body.sem-cha .only-com-cha{display:none !important}
 .vids.m-polaroid figure:nth-child(even){transform:rotate(2deg)}
 .vids.m-polaroid figcaption{margin-top:-38px;position:relative;z-index:2;text-align:center;color:#7A4554 !important;font-family:var(--f-script);font-size:22px;letter-spacing:0;opacity:1 !important}
 .vids.m-simples .vbox{border:0 !important;border-radius:18px !important;box-shadow:0 14px 34px rgba(0,0,0,.35) !important}
+/* Anote na agenda: um quadro só, com as informações lado a lado (empilhadas no celular) */
+.agenda-box{position:relative;z-index:2;display:grid;grid-template-columns:1fr;max-width:1000px;margin:34px auto 0;background:color-mix(in srgb,var(--marsala) 88%,#12080c);border:1px solid rgba(231,201,160,.28);border-radius:22px;overflow:hidden}
+.ag-item{display:flex;flex-direction:column;align-items:center;gap:6px;padding:26px 22px}
+.ag-item+.ag-item{border-top:1px solid rgba(231,201,160,.2)}
+.ag-item svg{width:28px;height:28px;color:var(--gold-soft)}
+.ag-item .k{font-family:var(--f-sans);font-size:12px;letter-spacing:.24em;text-transform:uppercase;color:var(--gold-soft)}
+.ag-item .v{font-size:18px;line-height:1.45;color:var(--cream)}
+.ag-item a{font-family:var(--f-sans);font-size:14px;color:var(--gold-soft);margin-top:4px}
+@media(min-width:800px){
+  .agenda-box{grid-template-columns:1.2fr 1.3fr 1fr}
+  .ag-item{padding:30px 26px}
+  .ag-item+.ag-item{border-top:0;border-left:1px solid rgba(231,201,160,.2)}
+}
 </style>
 
 
@@ -487,24 +500,19 @@ body.sem-cha .only-com-cha{display:none !important}
   <div class="in">
     <div class="eyebrow">Informações</div>
     <h2>Anote na agenda</h2>
-    <div class="cards">
-      <div class="card">
+    <div class="agenda-box">
+      <div class="ag-item">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>
-        <span class="k">Data</span>
-        <span class="v" data-cfg="dataLonga">Sábado, 14 de novembro de 2026</span>
+        <span class="k">Quando</span>
+        <span class="v"><span data-cfg="dataLonga">Sábado, 14 de novembro de 2026</span><br><span data-cfg="horaTxt">Às 19h30</span></span>
       </div>
-      <div class="card">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
-        <span class="k">Horário</span>
-        <span class="v" data-cfg="horaTxt">Às 19h30</span>
-      </div>
-      <div class="card">
+      <div class="ag-item">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 21s-7-6.3-7-12a7 7 0 0 1 14 0c0 5.7-7 12-7 12z"/><circle cx="12" cy="9" r="2.5"/></svg>
         <span class="k">Local</span>
         <span class="v" data-cfg="local">Av. Ettore e Aurora Coraucci, 2071 – Jd. Orestes Lopes de Camargo, Ribeirão Preto</span>
         <a data-cfg="mapa" href="https://www.google.com/maps/search/?api=1&query=Av.+Ettore+e+Aurora+Coraucci,+2071,+Ribeir%C3%A3o+Preto,+SP" target="_blank" rel="noopener">Abrir no mapa →</a>
       </div>
-      <div class="card">
+      <div class="ag-item">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 10h13v4a6 6 0 0 1-6 6h-1a6 6 0 0 1-6-6z"/><path d="M17 11h1.5a2.5 2.5 0 0 1 0 5H16M8 3c0 2 2 2 2 4M12 3c0 2 2 2 2 4"/></svg>
         <span class="k">Traga</span>
         <span class="v">Um prato salgado ou doce para partilharmos juntas</span>
