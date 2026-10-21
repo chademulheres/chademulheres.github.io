@@ -392,19 +392,14 @@ body.sem-cha .only-com-cha{display:none !important}
 .vids.m-polaroid figure:nth-child(even){transform:rotate(2deg)}
 .vids.m-polaroid figcaption{margin-top:-38px;position:relative;z-index:2;text-align:center;color:#7A4554 !important;font-family:var(--f-script);font-size:22px;letter-spacing:0;opacity:1 !important}
 .vids.m-simples .vbox{border:0 !important;border-radius:18px !important;box-shadow:0 14px 34px rgba(0,0,0,.35) !important}
-/* Anote na agenda: um quadro só, com as informações lado a lado (empilhadas no celular) */
-.agenda-box{position:relative;z-index:2;display:grid;grid-template-columns:1fr;max-width:1000px;margin:34px auto 0;background:color-mix(in srgb,var(--marsala) 88%,#12080c);border:1px solid rgba(231,201,160,.28);border-radius:22px;overflow:hidden}
-.ag-item{display:flex;flex-direction:column;align-items:center;gap:6px;padding:26px 22px}
-.ag-item+.ag-item{border-top:1px solid rgba(231,201,160,.2)}
-.ag-item svg{width:28px;height:28px;color:var(--gold-soft)}
-.ag-item .k{font-family:var(--f-sans);font-size:12px;letter-spacing:.24em;text-transform:uppercase;color:var(--gold-soft)}
+/* Anote na agenda: tudo junto num quadro só, uma informação embaixo da outra */
+.agenda-box{position:relative;z-index:2;max-width:640px;margin:34px auto 0;padding:28px 30px;background:color-mix(in srgb,var(--marsala) 88%,#12080c);border:1px solid rgba(231,201,160,.28);border-radius:22px;text-align:left;display:flex;flex-direction:column;gap:18px}
+.ag-item{display:grid;grid-template-columns:34px 1fr;column-gap:14px;align-items:start}
+.ag-item svg{grid-row:span 3;width:28px;height:28px;color:var(--gold-soft);margin-top:2px}
+.ag-item .k{font-family:var(--f-sans);font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:var(--gold-soft)}
 .ag-item .v{font-size:18px;line-height:1.45;color:var(--cream)}
-.ag-item a{font-family:var(--f-sans);font-size:14px;color:var(--gold-soft);margin-top:4px}
-@media(min-width:800px){
-  .agenda-box{grid-template-columns:1.2fr 1.3fr 1fr}
-  .ag-item{padding:30px 26px}
-  .ag-item+.ag-item{border-top:0;border-left:1px solid rgba(231,201,160,.2)}
-}
+.ag-item a{font-family:var(--f-sans);font-size:14px;color:var(--gold-soft);margin-top:2px;justify-self:start}
+@media(max-width:480px){.agenda-box{padding:22px 18px}.ag-item .v{font-size:17px}}
 </style>
 
 
