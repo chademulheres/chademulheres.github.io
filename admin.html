@@ -104,6 +104,9 @@ textarea{min-height:70px;resize:vertical}
 .gc-txt span{font:12px Poppins,system-ui,sans-serif;color:var(--muted)}
 .gal-card button{margin:8px 16px 16px;font:500 14px Poppins,system-ui,sans-serif;border:1.5px solid var(--gold-soft);color:var(--gold-soft);background:none;border-radius:999px;padding:10px 14px;cursor:pointer}
 .gal-card.novo button{background:var(--gold-soft);color:var(--deep)}
+.sair-box{border-top:1px solid var(--line);margin-top:22px;padding-top:18px}
+.sair-box b{color:var(--gold-soft)}
+.tirar-nome{float:right;font:500 12px Poppins,system-ui,sans-serif;color:var(--erro);background:none;border:1px solid color-mix(in srgb,var(--erro) 60%,transparent);border-radius:999px;padding:3px 10px;cursor:pointer;margin-left:8px}
 .dois{display:grid;gap:0 16px}
 .dois.botoes{gap:0 12px}
 @media(min-width:600px){
@@ -272,6 +275,12 @@ textarea{min-height:70px;resize:vertical}
       </div>
       </div>
       <div class="msg" id="m-envio"></div>
+      <div class="sair-box">
+        <b>🚫 Alguém pediu para sair?</b>
+        <p class="sub" style="margin:4px 0 0">Digite o WhatsApp de quem respondeu SAIR. Ela não recebe mais nenhuma mensagem do Chá. Também dá para tirar pelo "Ver os nomes".</p>
+        <div class="cor-linha" style="margin-top:10px"><input id="sair-num" type="tel" inputmode="numeric" placeholder="5516999999999"><button class="btn borda" id="b-sair" type="button" style="width:auto;margin:0;padding:12px 22px">Tirar</button></div>
+        <div class="msg" id="m-sair"></div>
+      </div>
     </section>
 
     <!-- Nomes de quem recebe a mensagem -->
@@ -280,6 +289,7 @@ textarea{min-height:70px;resize:vertical}
       <h2 id="nomes-tit">Nomes</h2>
       <p class="sub" id="nomes-sub"></p>
       <ol class="lista-nomes" id="nomes-ol"></ol>
+      <div class="msg" id="m-nomes"></div>
     </section>
     </div>
   </div>
@@ -485,9 +495,32 @@ function abrirNomes(tipo) {
     const li = document.createElement("li");
     li.textContent = n.nome;
     const s = document.createElement("small"); s.textContent = " · final " + n.final;
-    li.appendChild(s); ol.appendChild(li);
+    li.appendChild(s);
+    if (n.num) {
+      const b = document.createElement("button"); b.type = "button"; b.className = "tirar-nome"; b.textContent = "Tirar"; b.title = "Não mandar mais mensagens para ela";
+      b.addEventListener("click", () => tirarDaLista(n.num, n.nome, "m-nomes", b));
+      li.appendChild(b);
+    }
+    ol.appendChild(li);
   });
 }
+async function tirarDaLista(num, nome, caixa, btn) {
+  if (!confirm("Tirar " + (nome || num) + " da lista?\nEla não vai receber mais nenhuma mensagem do Chá.")) return;
+  if (btn) btn.disabled = true;
+  try {
+    const r = await pedir({ acao: "tirar", numero: num });
+    if (!r.ok) { msg(caixa, r.erro, false); return; }
+    preencher(r.painel);
+    if (location.hash.startsWith("#nomes-")) abrirNomes(location.hash.slice(7));
+    msg(caixa, (nome || num) + " saiu da lista. ✅ Fica guardada na aba \"Saíram\" da planilha.", true);
+  } catch (e) { msg(caixa, "Não consegui falar com a planilha. " + e.message, false); }
+  finally { if (btn) btn.disabled = false; }
+}
+$("b-sair").addEventListener("click", () => {
+  const n = $("sair-num").value.replace(/\D/g, "");
+  if (n.length < 10) { msg("m-sair", "Digite o número com DDD (ex.: 5516999999999).", false); return; }
+  tirarDaLista(n, "", "m-sair", $("b-sair")).then(() => { $("sair-num").value = ""; });
+});
 // abas: cada parte da administração numa página (o botão voltar do navegador também funciona)
 function mostrarAba() {
   const h = location.hash.slice(1);
