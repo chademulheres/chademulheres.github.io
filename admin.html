@@ -542,10 +542,7 @@ function montarLinks(planilha) {
     { ico: "📱", tit: "Aplicativo do contador", txt: "Mostra quantas inscritas tem até agora. Mande para as organizadoras instalarem no celular.", url: SITE_URL + "contador.html",
       zap: "Oi! Este é o contador de inscritas do Chá de Mulheres 🌸\n" + SITE_URL + "contador.html\n\nPara instalar no celular: abra o link no Chrome, toque nos 3 pontinhos (⋮) e em \"Instalar app\" (no iPhone, pelo Safari: botão Compartilhar → \"Adicionar à Tela de Início\")." },
     { ico: "📊", tit: "Planilha das inscrições", txt: "Abre a planilha no Google. Só funciona na conta da dona.", url: planilha || "" },
-    { ico: "🔒", tit: "Área das organizadoras", txt: "Esta página. Para entrar precisa da senha.", url: SITE_URL + "admin.html" },
     { ico: "🌸", tit: "Site do Chá", txt: "O site para divulgar.", url: SITE_URL, zap: "Conheça o Chá de Mulheres – Gerando Testemunho 🌸\n" + SITE_URL },
-    { ico: "📝", tit: "Inscrição", txt: "Formulário para se inscrever no próximo Chá.", url: "https://tinyurl.com/chademulheresrp", zap: "Faça sua inscrição no Chá de Mulheres 🌸\nhttps://tinyurl.com/chademulheresrp" },
-    { ico: "🔔", tit: "Avise-me", txt: "Para quem quer ser avisada dos próximos Chás.", url: "https://tally.so/r/jeDYOx", zap: "Quer ser avisada quando tiver Chá de Mulheres? 🌸\nhttps://tally.so/r/jeDYOx" },
   ];
   const el = $("links"); el.innerHTML = "";
   L.filter(x => x.url).forEach(x => {
