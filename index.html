@@ -279,7 +279,9 @@ html,body{overflow-x:hidden}
 .vids .vbox{position:relative;width:100%;aspect-ratio:4/5;border-radius:18px;overflow:hidden;box-shadow:0 12px 34px rgba(0,0,0,.3);background:#1b0f15}
 .vids .vbox::before{content:"";position:absolute;inset:-20px;background:var(--poster) center/cover;filter:blur(18px) brightness(.75) saturate(1.2)}
 .vids .vbox video{position:relative;z-index:1;width:100% !important;height:100% !important;aspect-ratio:auto !important;object-fit:contain !important;border-radius:0 !important;box-shadow:none !important;background:transparent !important}
-@media (max-width:520px){.vids .vbox{aspect-ratio:3/4}}
+@media (max-width:520px){.vids .vbox{aspect-ratio:3/4}
+.vids .vbox.emb::before{display:none}
+.vids .vbox iframe{position:relative;z-index:1;display:block;width:100%;height:100%;border:0;background:#000}}
 @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}.btn,.grid img{transition:none}}
 
 /* contador: Faltam + dias */
@@ -612,11 +614,50 @@ function tick(){
 }
 tick(); setInterval(tick,30000);
 
+/* Galeria: os Chás, fotos e vídeos vêm da planilha (aba Galeria), mudados pela administração */
+const esc=t=>String(t==null?"":t).replace(/[&<>"']/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]));
+function dataPontos(d){const [y,m,dd]=String(d).split("-");return dd&&m?dd+" . "+m+" . "+y:esc(d);}
+function dataBarras(d){const [y,m,dd]=String(d).split("-");return dd&&m?dd+"/"+m+"/"+y:esc(d);}
+function videoHTML(v){
+  const u=String(v.url||"").trim(), leg=v.legenda?"<figcaption>"+esc(v.legenda)+"</figcaption>":"";
+  let m, emb="";
+  if(/\.(mp4|webm|mov)(\?|$)/i.test(u)){const pos=u.replace(/\.(mp4|webm|mov)(\?.*)?$/i,".jpg");
+    return '<figure><div class="vbox" style="--poster:url('+esc(pos)+')"><video src="'+esc(u)+'" poster="'+esc(pos)+'" controls playsinline preload="none"></video></div>'+leg+'</figure>';}
+  if((m=u.match(/(?:youtube\.com\/(?:watch\?v=|shorts\/|embed\/|live\/)|youtu\.be\/)([\w-]{6,})/))) emb="https://www.youtube-nocookie.com/embed/"+m[1];
+  else if((m=u.match(/instagram\.com\/(?:[\w.]+\/)?(p|reel|reels|tv)\/([\w-]+)/))) emb="https://www.instagram.com/"+(m[1]==="p"?"p":"reel")+"/"+m[2]+"/embed";
+  else if((m=u.match(/drive\.google\.com\/(?:file\/d\/|open\?id=)([\w-]+)/))) emb="https://drive.google.com/file/d/"+m[1]+"/preview";
+  if(emb) return '<figure><div class="vbox emb"><iframe src="'+esc(emb)+'" loading="lazy" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen title="'+esc(v.legenda||"Vídeo do Chá")+'"></iframe></div>'+leg+'</figure>';
+  return '<figure><a class="btn ghost" href="'+esc(u)+'" target="_blank" rel="noopener">▶ Assistir o vídeo</a>'+leg+'</figure>';
+}
+function renderGaleria(g,proxima){
+  const eds=document.querySelector("#p-galeria .eds"); if(!eds) return;
+  const soon=eds.querySelector(".ed.soon");
+  eds.innerHTML=g.map(e=>{const capa=e.capa||e.fotos[0]||"";
+    const nv=e.videos.length,nf=e.fotos.length;
+    const cont=[nv?nv+(nv===1?" vídeo":" vídeos"):"",nf?nf+(nf===1?" foto":" fotos"):""].filter(Boolean).join(" · ")||"Em breve, fotos";
+    return '<a class="ed" href="#cha-'+esc(e.id)+'" data-page="cha-'+esc(e.id)+'">'+(capa?'<img src="'+esc(capa)+'" alt="" loading="lazy">':'')+'<div><span class="d">'+dataPontos(e.data)+'</span><b>'+esc(e.tema||e.titulo||"Chá de Mulheres")+'</b><span>'+cont+'</span></div></a>';}).join("");
+  if(soon&&!g.some(e=>e.data===proxima)) eds.appendChild(soon);
+  const sub=document.getElementById("gal-sub");
+  if(sub) sub.innerHTML='<a href="#galeria" data-page="galeria">Ver todos os Chás</a>'+g.map(e=>'<a href="#cha-'+esc(e.id)+'" data-page="cha-'+esc(e.id)+'">'+dataBarras(e.data)+'<small>'+esc(e.tema||"")+'</small></a>').join("");
+  document.querySelectorAll('.page[id^="p-cha-"]').forEach(x=>x.remove());
+  const antes=document.getElementById("p-convide");
+  g.forEach(e=>{const d=document.createElement("div"); d.className="page"; d.id="p-cha-"+e.id;
+    d.innerHTML='<section class="pg galeria"><div class="in"><a class="back" href="#galeria" data-page="galeria"><span aria-hidden="true">←</span> Voltar à galeria</a>'+
+      '<div class="eyebrow">'+dataPontos(e.data)+(e.tema?' · Tema: '+esc(e.tema):'')+'</div><h2>'+esc(e.titulo||"Chá de Mulheres")+'</h2>'+
+      (e.descricao?'<p class="sub">'+esc(e.descricao)+'</p>':'')+
+      (e.videos.length?'<div class="vids light">'+e.videos.map(videoHTML).join("")+'</div>':'')+
+      (e.fotos.length?'<div class="grid">'+e.fotos.map(f=>'<figure><img src="'+esc(f)+'" alt="Foto do Chá de Mulheres" loading="lazy"></figure>').join("")+'</div>':'')+
+      '</div></section>';
+    antes.parentNode.insertBefore(d,antes);});
+  if((location.hash||"").startsWith("#cha-")) setTimeout(show,0);
+}
+
 /* Data, horário, local, tema e cor vêm da planilha (página de administrador) */
 const MESES=["janeiro","fevereiro","março","abril","maio","junho","julho","agosto","setembro","outubro","novembro","dezembro"];
 const DIAS=["Domingo","Segunda-feira","Terça-feira","Quarta-feira","Quinta-feira","Sexta-feira","Sábado"];
 function aplicarConfig(c){
   if(!c) return;
+  if(Array.isArray(c.galeria)&&c.galeria.length) renderGaleria(c.galeria,c.data);
   const set=(k,v)=>document.querySelectorAll('[data-cfg="'+k+'"]').forEach(e=>{e.textContent=v});
   if(c.cor&&/^#[0-9a-f]{6}$/i.test(c.cor)){const r=document.documentElement.style;
     r.setProperty("--marsala",c.cor);
