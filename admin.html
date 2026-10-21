@@ -59,6 +59,9 @@ textarea{min-height:70px;resize:vertical}
 .fotos button{position:absolute;top:4px;width:30px;height:30px;border-radius:50%;border:0;background:rgba(255,255,255,.92);font-size:15px;cursor:pointer;line-height:30px;padding:0}
 .fotos .capa{left:4px;color:#A8823F}
 .fotos .tirar{right:4px;color:#A33A3A}
+.fotos .vid{display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.3)}
+.fotos .vid span{display:flex;flex-direction:column;align-items:center;font-size:30px;line-height:1}
+.fotos .vid small{font:12px Poppins,system-ui,sans-serif;color:var(--muted);margin-top:6px}
 .video-linha{display:grid;gap:6px;margin-top:10px;padding:10px;border:1px solid var(--line);border-radius:12px}
 .video-linha button{justify-self:end;font:500 13px Poppins,system-ui,sans-serif;border:0;background:none;color:var(--erro);cursor:pointer}
 .btn.perigo{color:var(--erro)!important;border-color:var(--erro)!important}
@@ -118,33 +121,23 @@ textarea{min-height:70px;resize:vertical}
     <!-- Galeria -->
     <section class="box">
       <h2>Galeria dos Chás</h2>
-      <p class="sub">Cada Chá vira um cartão na Galeria do site, com as fotos e os vídeos daquele encontro.</p>
+      <p class="sub">As fotos e os vídeos de cada Chá que aparecem no site.</p>
       <div id="gal-lista"></div>
-      <button class="btn borda" id="gal-novo" type="button">+ Adicionar um Chá à galeria</button>
+      <button class="btn borda" id="gal-novo" type="button">+ Novo Chá na galeria</button>
       <div id="gal-editor" hidden>
-        <div class="envio" style="margin-top:18px;padding-top:16px;border-top:1px solid var(--line)">
-          <b id="gal-ed-titulo">Novo Chá na galeria</b>
-          <label for="g-data">Data do Chá</label>
-          <input id="g-data" type="date">
-          <label for="g-tema">Tema</label>
-          <input id="g-tema" type="text" placeholder="Ex.: A obediência gera milagres">
-          <label for="g-titulo">Título da página</label>
-          <input id="g-titulo" type="text" placeholder="Ex.: Chá de Mulheres de agosto">
-          <label for="g-desc">Frase (opcional)</label>
-          <textarea id="g-desc" placeholder="Ex.: Uma noite de louvor, palavra e testemunhos."></textarea>
-          <label>Fotos</label>
-          <div class="dica">A foto com ★ é a capa do cartão. Toque na ☆ de outra foto para trocar a capa.</div>
-          <div class="fotos" id="g-fotos"></div>
-          <label class="btn claro" style="margin-top:12px;cursor:pointer">📷 Adicionar fotos<input id="g-arquivos" type="file" accept="image/*" multiple hidden></label>
-          <div class="dica" id="g-prog"></div>
-          <label>Vídeos</label>
-          <div class="dica">Cole o link do vídeo no YouTube, no Instagram ou no Google Drive (com o compartilhamento "Qualquer pessoa com o link").</div>
-          <div id="g-videos"></div>
-          <button class="btn borda" id="g-mais-video" type="button">+ Adicionar vídeo</button>
-          <button class="btn" id="g-salvar" type="button">Salvar este Chá</button>
-          <button class="btn borda" id="g-fechar" type="button">Voltar para a lista</button>
-          <button class="btn borda perigo" id="g-apagar" type="button">Apagar este Chá da galeria</button>
-        </div>
+        <b id="gal-ed-titulo" style="color:var(--gold-soft)">Novo Chá na galeria</b>
+        <label for="g-data">Data do Chá</label>
+        <input id="g-data" type="date">
+        <label for="g-tema">Tema</label>
+        <input id="g-tema" type="text" placeholder="Ex.: A obediência gera milagres">
+        <label>Fotos e vídeos</label>
+        <div class="dica">Toque no ✕ para tirar. A foto com ★ é a capa; toque na ☆ de outra para trocar.</div>
+        <div class="fotos" id="g-midia"></div>
+        <label class="btn" style="cursor:pointer">📷 Adicionar fotos e vídeos<input id="g-arquivos" type="file" accept="image/*,video/*" multiple hidden></label>
+        <div class="dica" id="g-prog" style="text-align:center"></div>
+        <button class="btn borda" id="g-salvar" type="button">Salvar</button>
+        <button class="btn borda" id="g-fechar" type="button">Voltar</button>
+        <p style="text-align:center;margin:18px 0 0"><a href="#" id="g-apagar" style="color:var(--erro);font-family:Poppins,system-ui,sans-serif;font-size:13px">Apagar este Chá da galeria</a></p>
         <div class="msg" id="m-gal"></div>
       </div>
       <div class="msg" id="m-gal-lista"></div>
@@ -311,6 +304,7 @@ $("b-teste").addEventListener("click", async e => {
 
 // ───── Galeria ─────
 let galeria = [], editando = null;
+const MESES_G = ["janeiro","fevereiro","março","abril","maio","junho","julho","agosto","setembro","outubro","novembro","dezembro"];
 function dataBr(d) { const [y, m, dd] = String(d || "").split("-"); return dd ? dd + "/" + m + "/" + y : ""; }
 function listaGaleria() {
   const el = $("gal-lista");
@@ -318,7 +312,7 @@ function listaGaleria() {
   galeria.forEach(e => {
     const d = document.createElement("div"); d.className = "gal-item";
     const capa = e.capa || e.fotos[0];
-    d.innerHTML = (capa ? '<img alt="">' : '<span class="semfoto"></span>') + '<div><b></b><span></span></div><button type="button">Editar</button>';
+    d.innerHTML = (capa ? '<img alt="">' : '<span class="semfoto"></span>') + '<div><b></b><span></span></div><button type="button">Abrir</button>';
     if (capa) d.querySelector("img").src = capa;
     d.querySelector("b").textContent = dataBr(e.data) + (e.tema ? " · " + e.tema : "");
     d.querySelector("span").textContent = e.fotos.length + " fotos · " + e.videos.length + " vídeos";
@@ -328,50 +322,43 @@ function listaGaleria() {
 }
 function abrirEdicao(id) {
   editando = id ? JSON.parse(JSON.stringify(galeria.find(e => e.id === id))) : { id: "", data: "", tema: "", titulo: "", descricao: "", capa: "", fotos: [], videos: [] };
-  $("gal-ed-titulo").textContent = id ? "Editando o Chá de " + dataBr(editando.data) : "Novo Chá na galeria";
-  $("g-data").value = editando.data; $("g-tema").value = editando.tema; $("g-titulo").value = editando.titulo; $("g-desc").value = editando.descricao;
+  $("gal-ed-titulo").textContent = id ? "Chá de " + dataBr(editando.data) : "Novo Chá na galeria";
+  $("g-data").value = editando.data; $("g-tema").value = editando.tema;
   $("g-apagar").hidden = !id; $("m-gal").className = "msg"; $("g-prog").textContent = "";
-  desenharFotos(); desenharVideos();
-  $("gal-lista").hidden = true; $("gal-novo").hidden = true; $("gal-editor").hidden = false;
+  desenharMidia();
+  $("gal-lista").hidden = true; $("gal-novo").hidden = true; $("gal-editor").hidden = false; $("m-gal-lista").className = "msg";
   $("gal-editor").scrollIntoView({ behavior: "smooth", block: "start" });
 }
 function fecharEdicao() { editando = null; $("gal-editor").hidden = true; $("gal-lista").hidden = false; $("gal-novo").hidden = false; listaGaleria(); }
-function desenharFotos() {
-  const el = $("g-fotos"); el.innerHTML = "";
+function desenharMidia() {
+  const el = $("g-midia"); el.innerHTML = "";
   const capa = editando.capa || editando.fotos[0];
   editando.fotos.forEach(url => {
     const f = document.createElement("figure");
-    f.innerHTML = '<img alt="" loading="lazy"><button class="capa" type="button"></button><button class="tirar" type="button" title="Tirar foto">✕</button>';
+    f.innerHTML = '<img alt="" loading="lazy"><button class="capa" type="button"></button><button class="tirar" type="button" title="Tirar">✕</button>';
     f.querySelector("img").src = url;
     const bc = f.querySelector(".capa"); bc.textContent = url === capa ? "★" : "☆"; bc.title = url === capa ? "Capa" : "Usar como capa";
-    bc.addEventListener("click", () => { editando.capa = url; desenharFotos(); });
-    f.querySelector(".tirar").addEventListener("click", () => tirarFoto(url));
+    bc.addEventListener("click", async () => { editando.capa = url; desenharMidia(); await salvarEdicao(true); });
+    f.querySelector(".tirar").addEventListener("click", () => tirar("foto", url));
     el.appendChild(f);
   });
-  if (!editando.fotos.length) el.innerHTML = '<p class="dica" style="grid-column:1/-1">Ainda sem fotos.</p>';
-}
-function desenharVideos() {
-  const el = $("g-videos"); el.innerHTML = "";
-  editando.videos.forEach((v, i) => {
-    const d = document.createElement("div"); d.className = "video-linha";
-    d.innerHTML = '<input type="text" placeholder="Legenda (ex.: Louvor e adoração)"><input type="url" placeholder="Link do vídeo"><button type="button">Tirar vídeo</button>';
-    const [leg, url] = d.querySelectorAll("input"); leg.value = v.legenda || ""; url.value = v.url || "";
-    leg.addEventListener("input", () => v.legenda = leg.value); url.addEventListener("input", () => v.url = url.value.trim());
-    d.querySelector("button").addEventListener("click", () => { editando.videos.splice(i, 1); desenharVideos(); });
-    el.appendChild(d);
+  editando.videos.forEach(v => {
+    const f = document.createElement("figure"); f.className = "vid";
+    f.innerHTML = '<span>🎬<small>Vídeo</small></span><button class="tirar" type="button" title="Tirar">✕</button>';
+    f.querySelector(".tirar").addEventListener("click", () => tirar("video", v.url));
+    el.appendChild(f);
   });
-}
-function lerEditor() {
-  editando.data = $("g-data").value; editando.tema = $("g-tema").value; editando.titulo = $("g-titulo").value; editando.descricao = $("g-desc").value;
+  if (!editando.fotos.length && !editando.videos.length) el.innerHTML = '<p class="dica" style="grid-column:1/-1">Ainda sem fotos e vídeos.</p>';
 }
 async function salvarEdicao(silencioso) {
-  lerEditor();
+  editando.data = $("g-data").value; editando.tema = $("g-tema").value;
   if (!editando.data) { msg("m-gal", "Escolha a data do Chá.", false); return false; }
-  const r = await pedir({ acao: "gal_salvar", edicao: { id: editando.id, data: editando.data, tema: editando.tema, titulo: editando.titulo, descricao: editando.descricao, capa: editando.capa || editando.fotos[0] || "", videos: editando.videos.filter(v => v.url) } });
+  if (!editando.titulo) editando.titulo = "Chá de Mulheres de " + MESES_G[Number(editando.data.slice(5, 7)) - 1];
+  const r = await pedir({ acao: "gal_salvar", edicao: { id: editando.id, data: editando.data, tema: editando.tema, titulo: editando.titulo, descricao: editando.descricao, capa: editando.capa || editando.fotos[0] || "", videos: editando.videos } });
   if (!r.ok) { msg("m-gal", r.erro, false); return false; }
   editando.id = r.id; galeria = r.painel.config.galeria || galeria;
-  $("g-apagar").hidden = false; $("gal-ed-titulo").textContent = "Editando o Chá de " + dataBr(editando.data);
-  if (!silencioso) msg("m-gal", "Salvo! ✅ A galeria do site já mostra as mudanças.", true);
+  $("g-apagar").hidden = false; $("gal-ed-titulo").textContent = "Chá de " + dataBr(editando.data);
+  if (!silencioso) msg("m-gal", "Salvo! ✅ O site já mostra as mudanças.", true);
   return true;
 }
 function diminuir(arquivo) {
@@ -387,35 +374,59 @@ function diminuir(arquivo) {
     img.src = url;
   });
 }
+function paraBase64(blob) {
+  return new Promise((ok, erro) => { const r = new FileReader(); r.onload = () => ok(String(r.result).split(",")[1]); r.onerror = () => erro(r.error); r.readAsDataURL(blob); });
+}
+const PEDACO = 8 * 1024 * 1024;
+async function enviarVideo(a, aviso) {
+  const ini = await pedir({ acao: "gal_video_inicio", id: editando.id, nome: a.name, tipo: a.type || "video/mp4", tamanho: a.size });
+  if (!ini.ok) throw new Error(ini.erro);
+  for (let pos = 0; pos < a.size; pos += PEDACO) {
+    aviso(Math.round(pos / a.size * 100));
+    const r = await pedir({ acao: "gal_video_parte", id: editando.id, sessao: ini.sessao, inicio: pos, total: a.size, base64: await paraBase64(a.slice(pos, pos + PEDACO)) });
+    if (!r.ok) throw new Error(r.erro);
+    if (r.url) { editando.videos.push({ url: r.url, legenda: "" }); galeria = r.painel.config.galeria || galeria; return; }
+  }
+  throw new Error("o envio não terminou");
+}
 $("g-arquivos").addEventListener("change", async e => {
   const arqs = [...e.target.files]; e.target.value = ""; if (!arqs.length) return;
   if (!editando.id && !(await salvarEdicao(true))) return;
-  let feitas = 0; const falhas = [];
+  let feitas = 0, n = 0; const falhas = [];
   for (const a of arqs) {
-    $("g-prog").textContent = "Enviando foto " + (feitas + falhas.length + 1) + " de " + arqs.length + "... (não feche a página)";
+    n++;
+    const ehVideo = (a.type || "").startsWith("video/") || /\.(mp4|mov|m4v|webm|3gp)$/i.test(a.name);
+    const rotulo = (ehVideo ? "Enviando vídeo " : "Enviando foto ") + n + " de " + arqs.length;
+    $("g-prog").textContent = rotulo + "... (não feche a página)";
     try {
-      const base64 = await diminuir(a);
-      const r = await pedir({ acao: "gal_foto", id: editando.id, nome: a.name, tipo: "image/jpeg", base64 });
-      if (!r.ok) throw new Error(r.erro);
-      editando.fotos.push(r.url); if (!editando.capa) editando.capa = r.url; galeria = r.painel.config.galeria || galeria; feitas++; desenharFotos();
+      if (ehVideo) await enviarVideo(a, pct => $("g-prog").textContent = rotulo + ": " + pct + "% (não feche a página)");
+      else {
+        const r = await pedir({ acao: "gal_foto", id: editando.id, nome: a.name, tipo: "image/jpeg", base64: await diminuir(a) });
+        if (!r.ok) throw new Error(r.erro);
+        editando.fotos.push(r.url); if (!editando.capa) editando.capa = r.url; galeria = r.painel.config.galeria || galeria;
+      }
+      feitas++; desenharMidia();
     } catch (err) { falhas.push(a.name + " (" + err.message + ")"); }
   }
   $("g-prog").textContent = "";
-  msg("m-gal", feitas + (feitas === 1 ? " foto enviada" : " fotos enviadas") + ". ✅" + (falhas.length ? "\nNão foram: " + falhas.join(", ") + "\nSe a foto for de iPhone (HEIC), salve como JPG e tente de novo." : ""), !falhas.length);
+  msg("m-gal", (feitas ? "Pronto! " + feitas + (feitas === 1 ? " arquivo enviado. ✅" : " arquivos enviados. ✅") : "") +
+    (falhas.length ? "\nNão foram: " + falhas.join(", ") + "\nSe a foto for de iPhone (HEIC), salve como JPG e tente de novo." : "") +
+    (arqs.some(a => (a.type || "").startsWith("video/")) && feitas ? "\nO vídeo pode levar alguns minutos para começar a tocar no site." : ""), !falhas.length);
 });
-async function tirarFoto(url) {
-  if (!confirm("Tirar esta foto da galeria?")) return;
-  const r = await pedir({ acao: "gal_tirar_foto", id: editando.id, url });
+async function tirar(tipo, url) {
+  if (!confirm(tipo === "foto" ? "Tirar esta foto?" : "Tirar este vídeo?")) return;
+  const r = await pedir({ acao: tipo === "foto" ? "gal_tirar_foto" : "gal_tirar_video", id: editando.id, url });
   if (!r.ok) { msg("m-gal", r.erro, false); return; }
-  editando.fotos = editando.fotos.filter(f => f !== url); if (editando.capa === url) editando.capa = editando.fotos[0] || "";
-  galeria = r.painel.config.galeria || galeria; desenharFotos();
+  if (tipo === "foto") { editando.fotos = editando.fotos.filter(f => f !== url); if (editando.capa === url) editando.capa = editando.fotos[0] || ""; }
+  else editando.videos = editando.videos.filter(v => v.url !== url);
+  galeria = r.painel.config.galeria || galeria; desenharMidia();
 }
 $("gal-novo").addEventListener("click", () => abrirEdicao(""));
 $("g-fechar").addEventListener("click", fecharEdicao);
-$("g-mais-video").addEventListener("click", () => { editando.videos.push({ url: "", legenda: "" }); desenharVideos(); });
-$("g-salvar").addEventListener("click", async e => { const b = e.currentTarget; b.disabled = true; b.textContent = "Salvando..."; try { await salvarEdicao(false); } catch (err) { msg("m-gal", "Não consegui salvar. " + err.message, false); } b.disabled = false; b.textContent = "Salvar este Chá"; });
-$("g-apagar").addEventListener("click", async () => {
-  if (!confirm("Apagar o Chá de " + dataBr(editando.data) + " da galeria, com todas as fotos dele?")) return;
+$("g-salvar").addEventListener("click", async e => { const b = e.currentTarget; b.disabled = true; b.textContent = "Salvando..."; try { await salvarEdicao(false); } catch (err) { msg("m-gal", "Não consegui salvar. " + err.message, false); } b.disabled = false; b.textContent = "Salvar"; });
+$("g-apagar").addEventListener("click", async ev => {
+  ev.preventDefault();
+  if (!confirm("Apagar o Chá de " + dataBr(editando.data) + " da galeria, com todas as fotos e vídeos?")) return;
   const r = await pedir({ acao: "gal_apagar", id: editando.id });
   if (!r.ok) { msg("m-gal", r.erro, false); return; }
   galeria = r.painel.config.galeria || []; fecharEdicao(); msg("m-gal-lista", "Chá apagado da galeria.", true);
