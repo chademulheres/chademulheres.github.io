@@ -81,11 +81,17 @@ textarea{min-height:70px;resize:vertical}
 .mm.arco{border:2px solid var(--gold-soft);border-radius:20px 20px 4px 4px}
 .mm.polaroid{border:3px solid #fbf6f1;border-bottom-width:9px;border-radius:1px;transform:rotate(-4deg)}
 .mm.simples{border-radius:6px}
-.nomes{margin:8px 0 0;font-size:15px}
-.nomes summary{cursor:pointer;font:500 13px Poppins,system-ui,sans-serif;color:var(--gold-soft)}
-.nomes ol{margin:8px 0 0;padding:8px 10px 8px 34px;max-height:260px;overflow:auto;background:var(--campo);border:1px solid var(--line);border-radius:12px}
-.nomes li{padding:3px 0}
-.nomes small{font:12px Poppins,system-ui,sans-serif;color:var(--muted)}
+.abas{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px}
+.abas a{flex:1 1 28%;text-align:center;font:500 14px Poppins,system-ui,sans-serif;color:var(--gold-soft);text-decoration:none;padding:11px 8px;border:1.5px solid var(--line);border-radius:14px;background:var(--card)}
+.abas a i{display:block;font-style:normal;margin-bottom:2px}
+.abas a.ativa{background:var(--gold-soft);color:var(--deep);border-color:var(--gold-soft)}
+.abas .sep{flex-basis:100%;height:0}
+.abas a.fraco{flex:1 1 40%;border:0;background:none;padding:2px;font-size:13px;text-decoration:underline}
+.ver-nomes{display:inline-block;margin-top:6px;font:500 14px Poppins,system-ui,sans-serif;color:var(--gold-soft)}
+.voltar{display:inline-block;margin-bottom:10px;font:500 15px Poppins,system-ui,sans-serif;color:var(--gold-soft);text-decoration:none}
+.lista-nomes{margin:6px 0 0;padding:0 0 0 30px;column-width:240px;column-gap:36px;font-size:16px}
+.lista-nomes li{padding:6px 0;border-bottom:1px solid var(--line);break-inside:avoid}
+.lista-nomes small{font:12px Poppins,system-ui,sans-serif;color:var(--muted)}
 .dois{display:grid;gap:0 16px}
 .dois.botoes{gap:0 12px}
 @media(min-width:600px){
@@ -94,13 +100,22 @@ textarea{min-height:70px;resize:vertical}
 }
 /* computador: aproveita a largura da tela */
 @media(min-width:960px){
-  main{max-width:1240px;padding:10px 28px 60px}
+  main{max-width:1320px;padding:10px 28px 60px}
   #entrar{max-width:520px;margin:0 auto 22px}
-  #painel:not([hidden]){display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);grid-template-areas:"topo topo" "cha msg" "gal gal";gap:0 24px;align-items:start}
-  .topo{grid-area:topo}
-  .s-cha{grid-area:cha}
-  .s-msg{grid-area:msg}
-  .s-gal{grid-area:gal}
+  #painel:not([hidden]){display:grid;grid-template-columns:230px minmax(0,1fr);gap:28px;align-items:start}
+  .abas{flex-direction:column;flex-wrap:nowrap;position:sticky;top:20px;margin:0}
+  .abas a{flex:none;text-align:left;padding:14px 18px;font-size:15px}
+  .abas a i{display:inline;margin:0 4px 0 0}
+  .abas .sep{flex-basis:auto;height:1px;background:var(--line);margin:10px 4px}
+  .abas a.fraco{flex:none;padding:6px 18px}
+  .colunas{display:grid;grid-template-columns:1fr 1fr;gap:0 40px}
+  .btn.salvar{max-width:360px}
+  .envios{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:6px}
+  .envios .envio{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:16px;padding:18px;margin:0;background:var(--campo)}
+  .envios .envio .btn{margin-top:auto}
+  .envios .envio input{margin-bottom:14px}
+  .envios .envio .num{margin:6px 0 4px}
+  .envios .envio .ver-nomes{margin:0 0 16px}
   .box{padding:26px 28px}
   #gal-lista{display:grid;grid-template-columns:repeat(2,1fr);gap:0 28px}
   #gal-novo{width:auto;padding:13px 30px}
@@ -133,13 +148,22 @@ textarea{min-height:70px;resize:vertical}
   </section>
 
   <div id="painel" hidden>
-    <div class="topo"><a href="./" target="_blank" rel="noopener">Ver o site →</a><a href="#" id="sair">Sair</a></div>
+    <nav class="abas">
+      <a href="#cha" data-aba="cha"><i>📅</i> Próximo Chá</a>
+      <a href="#mensagens" data-aba="mensagens"><i>💬</i> Mensagens</a>
+      <a href="#galeria" data-aba="galeria"><i>📷</i> Galeria</a>
+      <span class="sep"></span>
+      <a href="./" target="_blank" rel="noopener" class="fraco">Ver o site →</a>
+      <a href="#" id="sair" class="fraco">Sair</a>
+    </nav>
+    <div class="conteudo">
 
     <!-- Dados do Chá -->
-    <section class="box s-cha">
+    <section class="box s-cha" data-aba="cha">
       <h2>Próximo Chá</h2>
       <p class="sub">O que você salvar aqui aparece no site na hora (contador, convite, agenda e mapa).</p>
       <form id="f-cha">
+        <div class="colunas"><div>
         <div class="dois">
           <div><label for="data">Data</label>
           <input id="data" type="date"></div>
@@ -151,6 +175,7 @@ textarea{min-height:70px;resize:vertical}
         <textarea id="local" placeholder="Rua, número – bairro, cidade"></textarea>
         <label for="tema">Tema</label>
         <input id="tema" type="text" placeholder="Ex.: Mulheres Posicionadas">
+        </div><div>
         <label>Cor do site</label>
         <div class="dica" style="margin-bottom:6px">Escolha uma bolinha, qualquer cor no quadro, ou digite o nome ou o código.</div>
         <div id="cores">
@@ -160,14 +185,15 @@ textarea{min-height:70px;resize:vertical}
         <label for="cor-txt">Ou digite o nome ou o código da cor</label>
         <div class="cor-linha"><span class="amostra" id="amostra"></span><input id="cor-txt" type="text" placeholder="Ex.: vinho, lilás, verde-oliva ou #7A4554" autocomplete="off"></div>
         <div class="dica" id="cor-info">Pode colar o código que vocês acharem na internet (#7A4554, rgb(122,69,84)...).</div>
-        <button class="btn" type="submit">Salvar</button>
+        </div></div>
+        <button class="btn salvar" type="submit">Salvar</button>
       </form>
       <div class="msg" id="m-cha"></div>
     </section>
 
 
     <!-- Galeria -->
-    <section class="box s-gal">
+    <section class="box s-gal" data-aba="galeria">
       <h2>Galeria dos Chás</h2>
       <p class="sub">As fotos e os vídeos de cada Chá que aparecem no site.</p>
       <div id="gal-lista"></div>
@@ -204,21 +230,22 @@ textarea{min-height:70px;resize:vertical}
     </section>
 
     <!-- WhatsApp -->
-    <section class="box s-msg">
+    <section class="box s-msg" data-aba="mensagens">
       <h2>Mensagens</h2>
       <p class="sub">Use depois de salvar a data. Ninguém recebe a mesma mensagem duas vezes.</p>
+      <div class="envios">
       <div class="envio">
         <b>📅 Avisar a lista do próximo Chá</b>
         <p class="sub" style="margin:4px 0 0">Para quem pediu "Avise-me". Use quando marcar a data.</p>
         <div class="num" id="n-aviso">–</div>
-        <details class="nomes" id="d-aviso" hidden><summary>Ver os nomes</summary><ol id="l-aviso"></ol></details>
+        <a class="ver-nomes" id="v-aviso" href="#nomes-aviso" hidden>Ver os nomes →</a>
         <button class="btn claro" id="b-aviso" type="button">Avisar a lista</button>
       </div>
       <div class="envio">
         <b>🌸 Lembrete do dia</b>
         <p class="sub" style="margin:4px 0 0">Para as inscritas. Use na manhã do dia do Chá.</p>
         <div class="num" id="n-lembrete">–</div>
-        <details class="nomes" id="d-lembrete" hidden><summary>Ver os nomes</summary><ol id="l-lembrete"></ol></details>
+        <a class="ver-nomes" id="v-lembrete" href="#nomes-lembrete" hidden>Ver os nomes →</a>
         <button class="btn claro" id="b-lembrete" type="button">Enviar lembrete</button>
       </div>
       <div class="envio">
@@ -228,8 +255,18 @@ textarea{min-height:70px;resize:vertical}
         <input id="tel" type="tel" inputmode="numeric" placeholder="5516999999999">
         <button class="btn borda" id="b-teste" type="button">Enviar teste</button>
       </div>
+      </div>
       <div class="msg" id="m-envio"></div>
     </section>
+
+    <!-- Nomes de quem recebe a mensagem -->
+    <section class="box s-nomes" data-aba="nomes">
+      <a href="#mensagens" class="voltar">← Voltar</a>
+      <h2 id="nomes-tit">Nomes</h2>
+      <p class="sub" id="nomes-sub"></p>
+      <ol class="lista-nomes" id="nomes-ol"></ol>
+    </section>
+    </div>
   </div>
 </main>
 <script src="config.js"></script>
@@ -399,17 +436,38 @@ document.querySelectorAll("#g-molduras button").forEach(b => b.addEventListener(
   editando.moldura = b.dataset.m; marcarMoldura();
   if (editando.id && await salvarEdicao(true)) msg("m-gal", "Moldura trocada! ✅ Os vídeos deste Chá já aparecem com ela no site.", true);
 }));
+const nomesLista = { aviso: [], lembrete: [] };
 function listaNomes(tipo, nomes) {
-  const d = $("d-" + tipo), ol = $("l-" + tipo);
-  d.hidden = !(nomes && nomes.length);
-  ol.innerHTML = "";
-  (nomes || []).forEach(n => {
+  nomesLista[tipo] = nomes || [];
+  $("v-" + tipo).hidden = !nomesLista[tipo].length;
+  if (location.hash === "#nomes-" + tipo) abrirNomes(tipo);
+}
+function abrirNomes(tipo) {
+  const aviso = tipo === "aviso", lista = nomesLista[tipo] || [];
+  $("nomes-tit").textContent = aviso ? "Lista do aviso" : "Lista do lembrete";
+  $("nomes-sub").textContent = (aviso ? "Quem pediu \"Avise-me\" e vai receber o aviso do próximo Chá" : "Inscritas que vão receber o lembrete do dia") +
+    " · " + lista.length + (lista.length === 1 ? " mulher" : " mulheres");
+  const ol = $("nomes-ol"); ol.innerHTML = "";
+  if (!lista.length) ol.innerHTML = '<p class="dica">Ninguém na lista agora.</p>';
+  lista.forEach(n => {
     const li = document.createElement("li");
     li.textContent = n.nome;
     const s = document.createElement("small"); s.textContent = " · final " + n.final;
     li.appendChild(s); ol.appendChild(li);
   });
 }
+// abas: cada parte da administração numa página (o botão voltar do navegador também funciona)
+function mostrarAba() {
+  const h = location.hash.slice(1);
+  let aba = ["cha", "mensagens", "galeria"].includes(h) ? h : "cha";
+  if (h === "nomes-aviso" || h === "nomes-lembrete") { aba = "nomes"; abrirNomes(h.slice(6)); }
+  document.querySelectorAll("section[data-aba]").forEach(s => s.hidden = s.dataset.aba !== aba);
+  const atual = aba === "nomes" ? "mensagens" : aba;
+  document.querySelectorAll(".abas a[data-aba]").forEach(a => a.classList.toggle("ativa", a.dataset.aba === atual));
+  window.scrollTo(0, 0);
+}
+addEventListener("hashchange", mostrarAba);
+mostrarAba();
 function fecharEdicao() { editando = null; $("gal-editor").hidden = true; $("gal-lista").hidden = false; $("gal-novo").hidden = false; listaGaleria(); }
 function desenharMidia() {
   const el = $("g-midia"); el.innerHTML = "";
