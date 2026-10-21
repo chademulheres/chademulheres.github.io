@@ -81,6 +81,11 @@ textarea{min-height:70px;resize:vertical}
 .mm.arco{border:2px solid var(--gold-soft);border-radius:20px 20px 4px 4px}
 .mm.polaroid{border:3px solid #fbf6f1;border-bottom-width:9px;border-radius:1px;transform:rotate(-4deg)}
 .mm.simples{border-radius:6px}
+.nomes{margin:8px 0 0;font-size:15px}
+.nomes summary{cursor:pointer;font:500 13px Poppins,system-ui,sans-serif;color:var(--gold-soft)}
+.nomes ol{margin:8px 0 0;padding:8px 10px 8px 34px;max-height:260px;overflow:auto;background:var(--campo);border:1px solid var(--line);border-radius:12px}
+.nomes li{padding:3px 0}
+.nomes small{font:12px Poppins,system-ui,sans-serif;color:var(--muted)}
 .dois{display:grid;gap:0 16px}
 .dois.botoes{gap:0 12px}
 @media(min-width:600px){
@@ -206,12 +211,14 @@ textarea{min-height:70px;resize:vertical}
         <b>📅 Avisar a lista do próximo Chá</b>
         <p class="sub" style="margin:4px 0 0">Para quem pediu "Avise-me". Use quando marcar a data.</p>
         <div class="num" id="n-aviso">–</div>
+        <details class="nomes" id="d-aviso" hidden><summary>Ver os nomes</summary><ol id="l-aviso"></ol></details>
         <button class="btn claro" id="b-aviso" type="button">Avisar a lista</button>
       </div>
       <div class="envio">
         <b>🌸 Lembrete do dia</b>
         <p class="sub" style="margin:4px 0 0">Para as inscritas. Use na manhã do dia do Chá.</p>
         <div class="num" id="n-lembrete">–</div>
+        <details class="nomes" id="d-lembrete" hidden><summary>Ver os nomes</summary><ol id="l-lembrete"></ol></details>
         <button class="btn claro" id="b-lembrete" type="button">Enviar lembrete</button>
       </div>
       <div class="envio">
@@ -250,6 +257,7 @@ function preencher(p) {
   marcarCor(c.cor || "#7A4554");
   $("n-aviso").textContent = p.aviso + (p.aviso === 1 ? " mulher" : " mulheres");
   $("n-lembrete").textContent = p.lembrete + (p.lembrete === 1 ? " mulher" : " mulheres");
+  listaNomes("aviso", p.avisoNomes); listaNomes("lembrete", p.lembreteNomes);
   custoMsg = p.custoMsg || custoMsg;
   if (Array.isArray(c.galeria)) { galeria = c.galeria; if (!editando) listaGaleria(); }
   if (!p.whatsapp) msg("m-envio", "O WhatsApp ainda não foi configurado na planilha (menu Chá de Mulheres → Configurar WhatsApp).", false);
@@ -391,6 +399,17 @@ document.querySelectorAll("#g-molduras button").forEach(b => b.addEventListener(
   editando.moldura = b.dataset.m; marcarMoldura();
   if (editando.id && await salvarEdicao(true)) msg("m-gal", "Moldura trocada! ✅ Os vídeos deste Chá já aparecem com ela no site.", true);
 }));
+function listaNomes(tipo, nomes) {
+  const d = $("d-" + tipo), ol = $("l-" + tipo);
+  d.hidden = !(nomes && nomes.length);
+  ol.innerHTML = "";
+  (nomes || []).forEach(n => {
+    const li = document.createElement("li");
+    li.textContent = n.nome;
+    const s = document.createElement("small"); s.textContent = " · final " + n.final;
+    li.appendChild(s); ol.appendChild(li);
+  });
+}
 function fecharEdicao() { editando = null; $("gal-editor").hidden = true; $("gal-lista").hidden = false; $("gal-novo").hidden = false; listaGaleria(); }
 function desenharMidia() {
   const el = $("g-midia"); el.innerHTML = "";
