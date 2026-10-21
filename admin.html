@@ -65,6 +65,15 @@ textarea{min-height:70px;resize:vertical}
 .video-linha{display:grid;gap:6px;margin-top:10px;padding:10px;border:1px solid var(--line);border-radius:12px}
 .video-linha button{justify-self:end;font:500 13px Poppins,system-ui,sans-serif;border:0;background:none;color:var(--erro);cursor:pointer}
 .btn.perigo{color:var(--erro)!important;border-color:var(--erro)!important}
+.molduras{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+.molduras button{display:flex;flex-direction:column;align-items:center;gap:6px;padding:10px 4px 8px;border:1.5px solid var(--line);border-radius:12px;background:var(--campo);color:var(--cream);font:12px Poppins,system-ui,sans-serif;cursor:pointer}
+.molduras button[aria-pressed=true]{border-color:var(--gold-soft);background:color-mix(in srgb,var(--gold-soft) 18%,transparent)}
+.mm{display:block;width:30px;height:40px;background:linear-gradient(160deg,#6a4a8a,#2a1530)}
+.mm.rosas{border:4px dotted #E8A9B2;border-radius:3px}
+.mm.dourada{border:2px solid var(--gold-soft);border-radius:6px;outline:1px solid color-mix(in srgb,var(--gold-soft) 55%,transparent);outline-offset:2px}
+.mm.arco{border:2px solid var(--gold-soft);border-radius:20px 20px 4px 4px}
+.mm.polaroid{border:3px solid #fbf6f1;border-bottom-width:9px;border-radius:1px;transform:rotate(-4deg)}
+.mm.simples{border-radius:6px}
 [hidden]{display:none!important}
 </style>
 </head>
@@ -135,6 +144,14 @@ textarea{min-height:70px;resize:vertical}
         <div class="fotos" id="g-midia"></div>
         <label class="btn" style="cursor:pointer">📷 Adicionar fotos e vídeos<input id="g-arquivos" type="file" accept="image/*,video/*" multiple hidden></label>
         <div class="dica" id="g-prog" style="text-align:center"></div>
+        <label>Moldura dos vídeos</label>
+        <div class="molduras" id="g-molduras">
+          <button type="button" data-m="rosas"><i class="mm rosas"></i>Rosas</button>
+          <button type="button" data-m="dourada"><i class="mm dourada"></i>Dourada</button>
+          <button type="button" data-m="arco"><i class="mm arco"></i>Arco</button>
+          <button type="button" data-m="polaroid"><i class="mm polaroid"></i>Polaroid</button>
+          <button type="button" data-m="simples"><i class="mm simples"></i>Simples</button>
+        </div>
         <button class="btn borda" id="g-salvar" type="button">Salvar</button>
         <button class="btn borda" id="g-fechar" type="button">Voltar</button>
         <p style="text-align:center;margin:18px 0 0"><a href="#" id="g-apagar" style="color:var(--erro);font-family:Poppins,system-ui,sans-serif;font-size:13px">Apagar este Chá da galeria</a></p>
@@ -325,10 +342,17 @@ function abrirEdicao(id) {
   $("gal-ed-titulo").textContent = id ? "Chá de " + dataBr(editando.data) : "Novo Chá na galeria";
   $("g-data").value = editando.data; $("g-tema").value = editando.tema;
   $("g-apagar").hidden = !id; $("m-gal").className = "msg"; $("g-prog").textContent = "";
-  desenharMidia();
+  desenharMidia(); marcarMoldura();
   $("gal-lista").hidden = true; $("gal-novo").hidden = true; $("gal-editor").hidden = false; $("m-gal-lista").className = "msg";
   $("gal-editor").scrollIntoView({ behavior: "smooth", block: "start" });
 }
+function marcarMoldura() {
+  document.querySelectorAll("#g-molduras button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.m === (editando.moldura || "rosas"))));
+}
+document.querySelectorAll("#g-molduras button").forEach(b => b.addEventListener("click", async () => {
+  editando.moldura = b.dataset.m; marcarMoldura();
+  if (editando.id && await salvarEdicao(true)) msg("m-gal", "Moldura trocada! ✅ Os vídeos deste Chá já aparecem com ela no site.", true);
+}));
 function fecharEdicao() { editando = null; $("gal-editor").hidden = true; $("gal-lista").hidden = false; $("gal-novo").hidden = false; listaGaleria(); }
 function desenharMidia() {
   const el = $("g-midia"); el.innerHTML = "";
@@ -354,7 +378,7 @@ async function salvarEdicao(silencioso) {
   editando.data = $("g-data").value; editando.tema = $("g-tema").value;
   if (!editando.data) { msg("m-gal", "Escolha a data do Chá.", false); return false; }
   if (!editando.titulo) editando.titulo = "Chá de Mulheres de " + MESES_G[Number(editando.data.slice(5, 7)) - 1];
-  const r = await pedir({ acao: "gal_salvar", edicao: { id: editando.id, data: editando.data, tema: editando.tema, titulo: editando.titulo, descricao: editando.descricao, capa: editando.capa || editando.fotos[0] || "", videos: editando.videos } });
+  const r = await pedir({ acao: "gal_salvar", edicao: { id: editando.id, data: editando.data, tema: editando.tema, titulo: editando.titulo, descricao: editando.descricao, capa: editando.capa || editando.fotos[0] || "", videos: editando.videos, moldura: editando.moldura || "rosas" } });
   if (!r.ok) { msg("m-gal", r.erro, false); return false; }
   editando.id = r.id; galeria = r.painel.config.galeria || galeria;
   $("g-apagar").hidden = false; $("gal-ed-titulo").textContent = "Chá de " + dataBr(editando.data);
