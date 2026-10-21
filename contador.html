@@ -7,7 +7,12 @@
 <meta name="theme-color" content="#3F2530">
 <title>Inscritas · Chá de Mulheres</title>
 <link rel="icon" href="icon.png">
-<link rel="apple-touch-icon" href="icon.png">
+<link rel="manifest" href="contador.webmanifest">
+<link rel="apple-touch-icon" href="img/app-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Inscritas">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Pinyon+Script&family=Lora:ital,wght@0,400;0,600;1,400&family=Poppins:wght@400;500&display=swap">
 <style>
@@ -41,7 +46,7 @@ const MESES=["janeiro","fevereiro","março","abril","maio","junho","julho","agos
 const DIAS=["domingo","segunda-feira","terça-feira","quarta-feira","quinta-feira","sexta-feira","sábado"];
 function mostrar(c){
   if(!c) return;
-  if(/^#[0-9a-f]{6}$/i.test(c.cor||"")){document.documentElement.style.setProperty("--marsala",c.cor);}
+  if(/^#[0-9a-f]{6}$/i.test(c.cor||"")){document.documentElement.style.setProperty("--marsala",c.cor);const tc=document.querySelector('meta[name="theme-color"]');if(tc)tc.content=getComputedStyle(document.body).backgroundColor;}
   if(typeof c.total==="number") document.getElementById("num").textContent=c.total;
   document.getElementById("tema").textContent=c.tema||"Chá de Mulheres";
   if(c.data){
