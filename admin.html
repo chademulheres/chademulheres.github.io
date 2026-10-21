@@ -81,6 +81,31 @@ textarea{min-height:70px;resize:vertical}
 .mm.arco{border:2px solid var(--gold-soft);border-radius:20px 20px 4px 4px}
 .mm.polaroid{border:3px solid #fbf6f1;border-bottom-width:9px;border-radius:1px;transform:rotate(-4deg)}
 .mm.simples{border-radius:6px}
+.dois{display:grid;gap:0 16px}
+.dois.botoes{gap:0 12px}
+@media(min-width:600px){
+  .dois{grid-template-columns:1fr 1fr}
+  .fotos{grid-template-columns:repeat(4,1fr)}
+}
+/* computador: aproveita a largura da tela */
+@media(min-width:960px){
+  main{max-width:1240px;padding:10px 28px 60px}
+  #entrar{max-width:520px;margin:0 auto 22px}
+  #painel:not([hidden]){display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);grid-template-areas:"topo topo" "cha msg" "gal gal";gap:0 24px;align-items:start}
+  .topo{grid-area:topo}
+  .s-cha{grid-area:cha}
+  .s-msg{grid-area:msg}
+  .s-gal{grid-area:gal}
+  .box{padding:26px 28px}
+  #gal-lista{display:grid;grid-template-columns:repeat(2,1fr);gap:0 28px}
+  #gal-novo{width:auto;padding:13px 30px}
+  .fotos{grid-template-columns:repeat(7,1fr)}
+  .molduras{max-width:620px}
+  .dois.botoes{max-width:620px}
+}
+@media(min-width:1200px){
+  .fotos{grid-template-columns:repeat(8,1fr)}
+}
 [hidden]{display:none!important}
 </style>
 </head>
@@ -106,15 +131,17 @@ textarea{min-height:70px;resize:vertical}
     <div class="topo"><a href="./" target="_blank" rel="noopener">Ver o site →</a><a href="#" id="sair">Sair</a></div>
 
     <!-- Dados do Chá -->
-    <section class="box">
+    <section class="box s-cha">
       <h2>Próximo Chá</h2>
       <p class="sub">O que você salvar aqui aparece no site na hora (contador, convite, agenda e mapa).</p>
       <form id="f-cha">
-        <label for="data">Data</label>
-        <input id="data" type="date">
-        <div class="dica">Deixe em branco se ainda não tiver data: o site mostra "Em breve, um novo Chá!".</div>
-        <label for="hora">Horário</label>
-        <input id="hora" type="text" placeholder="19h30">
+        <div class="dois">
+          <div><label for="data">Data</label>
+          <input id="data" type="date"></div>
+          <div><label for="hora">Horário</label>
+          <input id="hora" type="text" placeholder="19h30"></div>
+        </div>
+        <div class="dica">Deixe a data em branco se ainda não tiver: o site mostra "Em breve, um novo Chá!".</div>
         <label for="local">Endereço</label>
         <textarea id="local" placeholder="Rua, número – bairro, cidade"></textarea>
         <label for="tema">Tema</label>
@@ -135,17 +162,19 @@ textarea{min-height:70px;resize:vertical}
 
 
     <!-- Galeria -->
-    <section class="box">
+    <section class="box s-gal">
       <h2>Galeria dos Chás</h2>
       <p class="sub">As fotos e os vídeos de cada Chá que aparecem no site.</p>
       <div id="gal-lista"></div>
       <button class="btn borda" id="gal-novo" type="button">+ Novo Chá na galeria</button>
       <div id="gal-editor" hidden>
         <b id="gal-ed-titulo" style="color:var(--gold-soft)">Novo Chá na galeria</b>
-        <label for="g-data">Data do Chá</label>
-        <input id="g-data" type="date">
-        <label for="g-tema">Tema</label>
-        <input id="g-tema" type="text" placeholder="Ex.: A obediência gera milagres">
+        <div class="dois">
+          <div><label for="g-data">Data do Chá</label>
+          <input id="g-data" type="date"></div>
+          <div><label for="g-tema">Tema</label>
+          <input id="g-tema" type="text" placeholder="Ex.: A obediência gera milagres"></div>
+        </div>
         <label>Fotos e vídeos</label>
         <div class="dica">Toque no ✕ para tirar. A foto com ★ é a capa; toque na ☆ de outra para trocar.</div>
         <div class="fotos" id="g-midia"></div>
@@ -159,8 +188,10 @@ textarea{min-height:70px;resize:vertical}
           <button type="button" data-m="polaroid"><i class="mm polaroid"></i>Polaroid</button>
           <button type="button" data-m="simples"><i class="mm simples"></i>Simples</button>
         </div>
-        <button class="btn borda" id="g-salvar" type="button">Salvar</button>
-        <button class="btn borda" id="g-fechar" type="button">Voltar</button>
+        <div class="dois botoes">
+          <button class="btn borda" id="g-salvar" type="button">Salvar</button>
+          <button class="btn borda" id="g-fechar" type="button">Voltar</button>
+        </div>
         <p style="text-align:center;margin:18px 0 0"><a href="#" id="g-apagar" style="color:var(--erro);font-family:Poppins,system-ui,sans-serif;font-size:13px">Apagar este Chá da galeria</a></p>
         <div class="msg" id="m-gal"></div>
       </div>
@@ -168,7 +199,7 @@ textarea{min-height:70px;resize:vertical}
     </section>
 
     <!-- WhatsApp -->
-    <section class="box">
+    <section class="box s-msg">
       <h2>Mensagens</h2>
       <p class="sub">Use depois de salvar a data. Ninguém recebe a mesma mensagem duas vezes.</p>
       <div class="envio">
