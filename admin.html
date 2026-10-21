@@ -92,6 +92,18 @@ textarea{min-height:70px;resize:vertical}
 .lista-nomes{margin:6px 0 0;padding:0 0 0 30px;column-width:240px;column-gap:36px;font-size:16px}
 .lista-nomes li{padding:6px 0;border-bottom:1px solid var(--line);break-inside:avoid}
 .lista-nomes small{font:12px Poppins,system-ui,sans-serif;color:var(--muted)}
+#gal-lista{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:18px;margin-top:6px}
+.gal-card{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:16px;overflow:hidden;background:var(--campo)}
+.gal-card.novo{border:1.5px dashed var(--gold-soft)}
+.gc-img{position:relative;aspect-ratio:16/10;background:var(--line);display:flex;align-items:center;justify-content:center;font-size:34px}
+.gc-img img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.gc-img em{position:absolute;top:10px;left:10px;font:500 12px Poppins,system-ui,sans-serif;font-style:normal;background:var(--gold-soft);color:var(--deep);padding:4px 10px;border-radius:999px}
+.gc-txt{padding:14px 16px 6px;flex:1}
+.gc-txt small{display:block;font:12px Poppins,system-ui,sans-serif;color:var(--gold-soft)}
+.gc-txt b{display:block;font-size:18px;font-weight:600;color:var(--cream);margin:2px 0}
+.gc-txt span{font:12px Poppins,system-ui,sans-serif;color:var(--muted)}
+.gal-card button{margin:8px 16px 16px;font:500 14px Poppins,system-ui,sans-serif;border:1.5px solid var(--gold-soft);color:var(--gold-soft);background:none;border-radius:999px;padding:10px 14px;cursor:pointer}
+.gal-card.novo button{background:var(--gold-soft);color:var(--deep)}
 .dois{display:grid;gap:0 16px}
 .dois.botoes{gap:0 12px}
 @media(min-width:600px){
@@ -117,7 +129,6 @@ textarea{min-height:70px;resize:vertical}
   .envios .envio .num{margin:6px 0 4px}
   .envios .envio .ver-nomes{margin:0 0 16px}
   .box{padding:26px 28px}
-  #gal-lista{display:grid;grid-template-columns:repeat(2,1fr);gap:0 28px}
   #gal-novo{width:auto;padding:13px 30px}
   .fotos{grid-template-columns:repeat(7,1fr)}
   .molduras{max-width:620px}
@@ -206,6 +217,10 @@ textarea{min-height:70px;resize:vertical}
           <div><label for="g-tema">Tema</label>
           <input id="g-tema" type="text" placeholder="Ex.: A obediência gera milagres"></div>
         </div>
+        <label for="g-titulo">Título</label>
+        <input id="g-titulo" type="text" placeholder="Ex.: Chá de Mulheres de agosto">
+        <label for="g-desc">Texto que aparece embaixo do título</label>
+        <textarea id="g-desc" placeholder="Ex.: Uma noite de louvor, palavra e testemunhos."></textarea>
         <label>Fotos e vídeos</label>
         <div class="dica">Toque no ✕ para tirar. A foto com ★ é a capa; toque na ☆ de outra para trocar.</div>
         <div class="fotos" id="g-midia"></div>
@@ -296,6 +311,7 @@ function preencher(p) {
   $("n-lembrete").textContent = p.lembrete + (p.lembrete === 1 ? " mulher" : " mulheres");
   listaNomes("aviso", p.avisoNomes); listaNomes("lembrete", p.lembreteNomes);
   custoMsg = p.custoMsg || custoMsg;
+  proximoCha = { data: c.data || "", tema: c.tema || "" };
   if (Array.isArray(c.galeria)) { galeria = c.galeria; if (!editando) listaGaleria(); }
   if (!p.whatsapp) msg("m-envio", "O WhatsApp ainda não foi configurado na planilha (menu Chá de Mulheres → Configurar WhatsApp).", false);
 }
@@ -403,27 +419,43 @@ $("b-teste").addEventListener("click", async e => {
 });
 
 // ───── Galeria ─────
-let galeria = [], editando = null;
+let galeria = [], editando = null, proximoCha = { data: "", tema: "" };
 const MESES_G = ["janeiro","fevereiro","março","abril","maio","junho","julho","agosto","setembro","outubro","novembro","dezembro"];
 function dataBr(d) { const [y, m, dd] = String(d || "").split("-"); return dd ? dd + "/" + m + "/" + y : ""; }
+function tituloAuto(data) {
+  return data ? "Chá de Mulheres de " + MESES_G[Number(data.slice(5, 7)) - 1] : "";
+}
 function listaGaleria() {
-  const el = $("gal-lista");
-  el.innerHTML = galeria.length ? "" : '<p class="sub">Nenhum Chá na galeria ainda.</p>';
-  galeria.forEach(e => {
-    const d = document.createElement("div"); d.className = "gal-item";
+  const el = $("gal-lista"); el.innerHTML = "";
+  const hoje = new Date().toISOString().slice(0, 10);
+  const itens = galeria.slice();
+  // o próximo Chá aparece já aqui, mesmo antes de ter fotos
+  if (proximoCha.data && !galeria.some(e => e.data === proximoCha.data))
+    itens.unshift({ id: "", novo: true, data: proximoCha.data, tema: proximoCha.tema, titulo: tituloAuto(proximoCha.data), fotos: [], videos: [] });
+  itens.sort((a, b) => b.data.localeCompare(a.data));
+  if (!itens.length) el.innerHTML = '<p class="sub">Nenhum Chá na galeria ainda.</p>';
+  itens.forEach(e => {
+    const d = document.createElement("div"); d.className = "gal-card" + (e.novo ? " novo" : "");
     const capa = e.capa || e.fotos[0];
-    d.innerHTML = (capa ? '<img alt="">' : '<span class="semfoto"></span>') + '<div><b></b><span></span></div><button type="button">Abrir</button>';
+    d.innerHTML = '<div class="gc-img">' + (capa ? '<img alt="" loading="lazy">' : '<span>📷</span>') + '<em hidden></em></div>' +
+      '<div class="gc-txt"><small></small><b></b><span></span></div><button type="button"></button>';
     if (capa) d.querySelector("img").src = capa;
-    d.querySelector("b").textContent = dataBr(e.data) + (e.tema ? " · " + e.tema : "");
-    d.querySelector("span").textContent = e.fotos.length + " fotos · " + e.videos.length + " vídeos";
-    d.querySelector("button").addEventListener("click", () => abrirEdicao(e.id));
+    const selo = d.querySelector("em");
+    if (e.data >= hoje) { selo.hidden = false; selo.textContent = e.data === proximoCha.data ? "Próximo Chá" : "Em breve"; }
+    d.querySelector("small").textContent = dataBr(e.data) + (e.tema ? " · " + e.tema : "");
+    d.querySelector("b").textContent = e.titulo || tituloAuto(e.data);
+    d.querySelector(".gc-txt span").textContent = e.novo ? "Ainda não está na galeria do site" : e.fotos.length + " fotos · " + e.videos.length + " vídeos";
+    const btn = d.querySelector("button");
+    btn.textContent = e.novo ? "+ Preparar a galeria" : "✏️ Editar";
+    btn.addEventListener("click", () => abrirEdicao(e.id, e.novo ? e : null));
     el.appendChild(d);
   });
 }
-function abrirEdicao(id) {
-  editando = id ? JSON.parse(JSON.stringify(galeria.find(e => e.id === id))) : { id: "", data: "", tema: "", titulo: "", descricao: "", capa: "", fotos: [], videos: [] };
-  $("gal-ed-titulo").textContent = id ? "Chá de " + dataBr(editando.data) : "Novo Chá na galeria";
+function abrirEdicao(id, base) {
+  editando = id ? JSON.parse(JSON.stringify(galeria.find(e => e.id === id))) : { id: "", data: base ? base.data : "", tema: base ? base.tema : "", titulo: "", descricao: "", capa: "", fotos: [], videos: [] };
+  $("gal-ed-titulo").textContent = editando.data ? "Chá de " + dataBr(editando.data) : "Novo Chá na galeria";
   $("g-data").value = editando.data; $("g-tema").value = editando.tema;
+  $("g-titulo").value = editando.titulo || tituloAuto(editando.data); $("g-desc").value = editando.descricao || "";
   $("g-apagar").hidden = !id; $("m-gal").className = "msg"; $("g-prog").textContent = "";
   desenharMidia(); marcarMoldura();
   $("gal-lista").hidden = true; $("gal-novo").hidden = true; $("gal-editor").hidden = false; $("m-gal-lista").className = "msg";
@@ -468,6 +500,14 @@ function mostrarAba() {
 }
 addEventListener("hashchange", mostrarAba);
 mostrarAba();
+let dataAntes = "";
+$("g-data").addEventListener("focus", () => dataAntes = $("g-data").value);
+$("g-data").addEventListener("change", () => {
+  // se o título ainda era o automático, acompanha o mês da nova data
+  const t = $("g-titulo").value.trim();
+  if (!t || t === tituloAuto(dataAntes)) $("g-titulo").value = tituloAuto($("g-data").value);
+  dataAntes = $("g-data").value;
+});
 function fecharEdicao() { editando = null; $("gal-editor").hidden = true; $("gal-lista").hidden = false; $("gal-novo").hidden = false; listaGaleria(); }
 function desenharMidia() {
   const el = $("g-midia"); el.innerHTML = "";
@@ -491,8 +531,9 @@ function desenharMidia() {
 }
 async function salvarEdicao(silencioso) {
   editando.data = $("g-data").value; editando.tema = $("g-tema").value;
+  editando.titulo = $("g-titulo").value.trim(); editando.descricao = $("g-desc").value.trim();
   if (!editando.data) { msg("m-gal", "Escolha a data do Chá.", false); return false; }
-  if (!editando.titulo) editando.titulo = "Chá de Mulheres de " + MESES_G[Number(editando.data.slice(5, 7)) - 1];
+  if (!editando.titulo) { editando.titulo = tituloAuto(editando.data); $("g-titulo").value = editando.titulo; }
   const r = await pedir({ acao: "gal_salvar", edicao: { id: editando.id, data: editando.data, tema: editando.tema, titulo: editando.titulo, descricao: editando.descricao, capa: editando.capa || editando.fotos[0] || "", videos: editando.videos, moldura: editando.moldura || "rosas" } });
   if (!r.ok) { msg("m-gal", r.erro, false); return false; }
   editando.id = r.id; galeria = r.painel.config.galeria || galeria;
