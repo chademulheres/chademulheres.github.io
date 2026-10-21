@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /admin.html
+Disallow: /contador.html
+Disallow: /sair.html
+
+Sitemap: https://chademulheres.github.io/sitemap.xml

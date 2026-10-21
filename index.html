@@ -1,13 +1,18 @@
 <!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
 
 <meta name="claude:viewport-fit-sides" content="cover">
-<title>Chá de Mulheres · Gerando Testemunho</title>
-<meta name="description" content="Chá de Mulheres – Gerando Testemunho. Tema: Mulheres Posicionadas. Sábado, 14 de novembro de 2026, às 19h30, em Ribeirão Preto. Faça sua inscrição.">
+<title>Chá de Mulheres Ribeirão Preto · Gerando Testemunho</title>
+<meta name="description" content="Chá de Mulheres – Gerando Testemunho: encontro cristão para mulheres em Ribeirão Preto (SP), com louvor, palavra e testemunhos. Veja a data do próximo Chá e faça sua inscrição.">
+<meta name="keywords" content="chá de mulheres, chá de mulheres ribeirão preto, gerando testemunho, encontro de mulheres cristãs, evento cristão para mulheres, ribeirão preto">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="pt_BR">
+<meta property="og:site_name" content="Chá de Mulheres – Gerando Testemunho">
 <meta property="og:title" content="Chá de Mulheres · Gerando Testemunho">
 <meta property="og:description" content="Sábado, 14/11/2026, às 19h30 · Ribeirão Preto. Faça sua inscrição!">
 <meta property="og:image" content="https://chademulheres.github.io/img/hero.jpg">
 <meta property="og:url" content="https://chademulheres.github.io/">
 <link rel="canonical" href="https://chademulheres.github.io/">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Organization","name":"Chá de Mulheres – Gerando Testemunho","alternateName":["Chá de Mulheres Ribeirão Preto","Chá de Mulheres RP"],"url":"https://chademulheres.github.io/","logo":"https://chademulheres.github.io/img/app-512.png","sameAs":["https://www.instagram.com/chadevocional_29/"],"address":{"@type":"PostalAddress","addressLocality":"Ribeirão Preto","addressRegion":"SP","addressCountry":"BR"}}</script>
 <meta name="theme-color" content="#3F2530">
 <link rel="icon" href="icon.png">
 <link rel="manifest" href="site.webmanifest">
@@ -700,8 +705,21 @@ function renderGaleria(g,proxima){
 /* Data, horário, local, tema e cor vêm da planilha (página de administrador) */
 const MESES=["janeiro","fevereiro","março","abril","maio","junho","julho","agosto","setembro","outubro","novembro","dezembro"];
 const DIAS=["Domingo","Segunda-feira","Terça-feira","Quarta-feira","Quinta-feira","Sexta-feira","Sábado"];
+function eventoGoogle(c){
+  let el=document.getElementById("ld-evento"); if(el) el.remove();
+  if(!c.data||new Date(c.data+"T23:59:59-03:00")<new Date()) return;
+  const m=String(c.hora||"").match(/(\d{1,2})\D*(\d{2})?/), hh=m?m[1].padStart(2,"0"):"19", mm=m&&m[2]?m[2]:"00";
+  const ev={"@context":"https://schema.org","@type":"Event","name":"Chá de Mulheres – "+(c.tema||"Gerando Testemunho"),
+    "startDate":c.data+"T"+hh+":"+mm+":00-03:00","eventStatus":"https://schema.org/EventScheduled","eventAttendanceMode":"https://schema.org/OfflineEventAttendanceMode",
+    "location":{"@type":"Place","name":"Chá de Mulheres","address":{"@type":"PostalAddress","streetAddress":c.local||"","addressLocality":"Ribeirão Preto","addressRegion":"SP","addressCountry":"BR"}},
+    "image":["https://chademulheres.github.io/img/hero.jpg"],"description":"Encontro cristão para mulheres em Ribeirão Preto"+(c.tema?" com o tema "+c.tema:"")+".",
+    "organizer":{"@type":"Organization","name":"Chá de Mulheres – Gerando Testemunho","url":"https://chademulheres.github.io/"},
+    "offers":{"@type":"Offer","url":"https://tinyurl.com/chademulheresrp","price":"0","priceCurrency":"BRL","availability":"https://schema.org/InStock"}};
+  el=document.createElement("script"); el.type="application/ld+json"; el.id="ld-evento"; el.textContent=JSON.stringify(ev); document.head.appendChild(el);
+}
 function aplicarConfig(c){
   if(!c) return;
+  try{eventoGoogle(c);}catch(_){}
   if(Array.isArray(c.galeria)&&c.galeria.length) renderGaleria(c.galeria,c.data);
   const set=(k,v)=>document.querySelectorAll('[data-cfg="'+k+'"]').forEach(e=>{e.textContent=v});
   if(c.cor&&/^#[0-9a-f]{6}$/i.test(c.cor)){const r=document.documentElement.style;
