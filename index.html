@@ -414,7 +414,7 @@ body.sem-cha .only-com-cha{display:none !important}
       <blockquote><span aria-hidden="true">📖</span> “Eis que tudo tem o seu tempo determinado, e há tempo para todo o propósito debaixo do céu.”<cite>Eclesiastes 3:1</cite></blockquote>
     </section>
     <section class="sobre convbox only-com-cha" id="home-convite" aria-label="Convite">
-      <div class="eyebrow">Convite especial · Mulheres Posicionadas</div>
+      <div class="eyebrow">Convite especial · <span data-cfg="tema">Mulheres Posicionadas</span></div>
       <h3 class="convh">Querida mulher</h3>
       <div class="text">
       <p>Você é nossa convidada especial para viver uma noite de comunhão, adoração, edificação e uma palavra poderosa da parte de Deus! ❤️</p>
@@ -432,8 +432,8 @@ body.sem-cha .only-com-cha{display:none !important}
     </div>
     <div class="next">
       <div class="eyebrow">Próximo encontro</div>
-      <p class="tema"><b>Mulheres Posicionadas</b></p>
-      <div class="when">Sábado, 14 de novembro de 2026 · 19h30 · Ribeirão Preto</div>
+      <p class="tema"><b data-cfg="tema">Mulheres Posicionadas</b></p>
+      <div class="when" data-cfg="when">Sábado, 14 de novembro de 2026 · 19h30 · Ribeirão Preto</div>
     </div>
     <div class="noevent" id="noevent">
       <div class="eyebrow">Próximo encontro</div>
@@ -457,18 +457,18 @@ body.sem-cha .only-com-cha{display:none !important}
       <div class="card">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>
         <span class="k">Data</span>
-        <span class="v">Sábado, 14 de novembro de 2026</span>
+        <span class="v" data-cfg="dataLonga">Sábado, 14 de novembro de 2026</span>
       </div>
       <div class="card">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
         <span class="k">Horário</span>
-        <span class="v">Às 19h30</span>
+        <span class="v" data-cfg="horaTxt">Às 19h30</span>
       </div>
       <div class="card">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 21s-7-6.3-7-12a7 7 0 0 1 14 0c0 5.7-7 12-7 12z"/><circle cx="12" cy="9" r="2.5"/></svg>
         <span class="k">Local</span>
-        <span class="v">Av. Ettore e Aurora Coraucci, 2071 – Jd. Orestes Lopes de Camargo, Ribeirão Preto</span>
-        <a href="https://www.google.com/maps/search/?api=1&query=Av.+Ettore+e+Aurora+Coraucci,+2071,+Ribeir%C3%A3o+Preto,+SP" target="_blank" rel="noopener">Abrir no mapa →</a>
+        <span class="v" data-cfg="local">Av. Ettore e Aurora Coraucci, 2071 – Jd. Orestes Lopes de Camargo, Ribeirão Preto</span>
+        <a data-cfg="mapa" href="https://www.google.com/maps/search/?api=1&query=Av.+Ettore+e+Aurora+Coraucci,+2071,+Ribeir%C3%A3o+Preto,+SP" target="_blank" rel="noopener">Abrir no mapa →</a>
       </div>
       <div class="card">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 10h13v4a6 6 0 0 1-6 6h-1a6 6 0 0 1-6-6z"/><path d="M17 11h1.5a2.5 2.5 0 0 1 0 5H16M8 3c0 2 2 2 2 4M12 3c0 2 2 2 2 4"/></svg>
@@ -554,7 +554,7 @@ body.sem-cha .only-com-cha{display:none !important}
     <p class="sub">Escolha um Chá para ver as fotos e os vídeos daquele encontro.</p>
     <div class="eds">
       <a class="ed" href="#cha-2026-08" data-page="cha-2026-08"><img src="img/salao.jpg" alt="" loading="lazy"><div><span class="d">29 . 08 . 2026</span><b>A obediência gera milagres</b><span>2 vídeos · 6 fotos</span></div></a>
-      <div class="ed soon"><div><b style="color:var(--muted);font-weight:400;font-style:italic">Em breve</b><span>14 . 11 . 2026 · Mulheres Posicionadas</span></div></div>
+      <div class="ed soon"><div><b style="color:var(--muted);font-weight:400;font-style:italic">Em breve</b><span data-cfg="soon">14 . 11 . 2026 · Mulheres Posicionadas</span></div></div>
     </div>
   </div>
 </section></div>
@@ -585,18 +585,20 @@ body.sem-cha .only-com-cha{display:none !important}
 </footer>
 </main>
 
+<script src="config.js"></script>
 <script>
 /* Próximo chá: depois dessa data, o site mostra "Em breve, um novo Chá!" sozinho */
-const PROXIMO_CHA="2026-11-14T22:00:00-03:00";
+let PROXIMO_CHA="2026-11-14T22:00:00-03:00";
 if(!PROXIMO_CHA || new Date()>new Date(PROXIMO_CHA)) document.body.classList.add("sem-cha");
 
 document.addEventListener("DOMContentLoaded",()=>{});
-const ev=new Date("2026-11-14T19:30:00-03:00");
+let ev=new Date("2026-11-14T19:30:00-03:00");
 function tick(){
   const hoje=new Date(); const a=new Date(hoje.getFullYear(),hoje.getMonth(),hoje.getDate());
   const b=new Date(ev.getFullYear(),ev.getMonth(),ev.getDate());
   const d=Math.round((b-a)/864e5);
   const box=document.getElementById("count");
+  if(isNaN(d)) return;
   if(d<=0){ box.innerHTML='<div class="cd-box"><b style="font-size:30px">É hoje! 🌷</b></div>'; return; }
   document.getElementById("cd-lbl").textContent=d===1?"Falta":"Faltam";
   document.getElementById("cd-d").textContent=d;
@@ -604,6 +606,47 @@ function tick(){
 }
 tick(); setInterval(tick,30000);
 
+/* Data, horário, local, tema e cor vêm da planilha (página de administrador) */
+const MESES=["janeiro","fevereiro","março","abril","maio","junho","julho","agosto","setembro","outubro","novembro","dezembro"];
+const DIAS=["Domingo","Segunda-feira","Terça-feira","Quarta-feira","Quinta-feira","Sexta-feira","Sábado"];
+function aplicarConfig(c){
+  if(!c) return;
+  const set=(k,v)=>document.querySelectorAll('[data-cfg="'+k+'"]').forEach(e=>{e.textContent=v});
+  if(c.cor&&/^#[0-9a-f]{6}$/i.test(c.cor)){const r=document.documentElement.style;
+    r.setProperty("--marsala",c.cor);
+    r.setProperty("--marsala-deep","color-mix(in srgb,"+c.cor+" 52%,#12080c)");
+    r.setProperty("--marsala-mid","color-mix(in srgb,"+c.cor+" 70%,#fff)");
+    const tc=document.querySelector('meta[name="theme-color"]'); if(tc) tc.content=c.cor;}
+  if(c.tema){set("tema",c.tema);}
+  if(c.local){set("local",c.local);document.querySelectorAll('[data-cfg="mapa"]').forEach(a=>{a.href="https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(c.local)});}
+  if(c.hora) set("horaTxt","Às "+c.hora);
+  if(!c.data){PROXIMO_CHA="";document.body.classList.add("sem-cha");return;}
+  const [y,m,d]=c.data.split("-").map(Number);
+  const hm=(c.hora||"").match(/(\d{1,2})\s*[h:]\s*(\d{2})?/i);
+  const h=hm?Number(hm[1]):19, mi=hm&&hm[2]?Number(hm[2]):0;
+  const p2=n=>String(n).padStart(2,"0");
+  ev=new Date(y+"-"+p2(m)+"-"+p2(d)+"T"+p2(h)+":"+p2(mi)+":00-03:00");
+  PROXIMO_CHA=new Date(ev.getTime()+3*36e5).toISOString();
+  const longa=DIAS[new Date(y,m-1,d).getDay()]+", "+d+" de "+MESES[m-1]+" de "+y;
+  set("dataLonga",longa);
+  set("when",longa+(c.hora?" · "+c.hora:"")+" · Ribeirão Preto");
+  set("soon",p2(d)+" . "+p2(m)+" . "+y+(c.tema?" · "+c.tema:""));
+  document.body.classList.toggle("sem-cha",new Date()>new Date(PROXIMO_CHA));
+  const wa=document.getElementById("b-wa");
+  if(wa){let t=decodeURIComponent(wa.href.split("?text=")[1]||"");
+    if(c.tema) t=t.replace(/(🌸 Tema: ).*( 🌸)/,"$1"+c.tema.toUpperCase()+"$2");
+    t=t.replace(/(📅 Data: ).*/,"$1"+d+" de "+MESES[m-1]+" de "+y);
+    if(c.hora) t=t.replace(/(⏰ Horário: ).*/,"$1Às "+c.hora);
+    if(c.local) t=t.replace(/(📍 Local: ).*/,"$1"+c.local);
+    wa.href="https://wa.me/?text="+encodeURIComponent(t);}
+  tick();
+}
+(function(){
+  let guardado=null; try{guardado=JSON.parse(localStorage.getItem("cha-config")||"null");}catch(_){}
+  if(guardado) aplicarConfig(guardado);
+  if(!window.CHA_CONFIG_URL) return;
+  fetch(window.CHA_CONFIG_URL).then(r=>r.json()).then(c=>{aplicarConfig(c);try{localStorage.setItem("cha-config",JSON.stringify(c));}catch(_){}}).catch(()=>{});
+})();
 
 document.getElementById("b-copy").addEventListener("click",async e=>{const b=e.currentTarget;let ok=false;
   try{await navigator.clipboard.writeText("https://tinyurl.com/chademulheresrp");ok=true;}catch(_){}

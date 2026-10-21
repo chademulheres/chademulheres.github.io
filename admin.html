@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Administração · Chá de Mulheres</title>
+<link rel="icon" href="icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Pinyon+Script&family=Lora:ital,wght@0,400;0,600;1,400&family=Poppins:wght@400;500&display=swap">
+<style>
+:root{--marsala:#7A4554;--marsala-deep:#3F2530;--gold:#B98E5A;--gold-soft:#E7C9A0;--cream:#FCF5F3;--ink:#3D2830;--muted:#8E7279;--line:#F0DCDD;--ok:#3E7A4F;--erro:#A33A3A}
+*{box-sizing:border-box}
+body{margin:0;background:var(--cream);color:var(--ink);font:16px/1.55 Lora,Georgia,serif}
+header{background:var(--marsala-deep);color:var(--cream);text-align:center;padding:26px 16px 22px}
+header img{width:min(84vw,420px);height:auto;display:block;margin:0 auto}
+header p{font-family:Poppins,system-ui,sans-serif;font-size:12px;letter-spacing:.3em;text-transform:uppercase;color:var(--gold-soft);margin:12px 0 0}
+main{max-width:640px;margin:0 auto;padding:24px 16px 60px}
+.box{background:#fff;border:1px solid var(--line);border-radius:18px;padding:22px 20px;margin-bottom:22px;box-shadow:0 6px 24px rgba(63,37,48,.06)}
+h2{font-family:"Pinyon Script",cursive;font-weight:400;font-size:40px;color:var(--marsala);margin:0 0 4px;line-height:1.1}
+.sub{color:var(--muted);font-size:14px;margin:0 0 16px}
+label{display:block;font-family:Poppins,system-ui,sans-serif;font-size:13px;font-weight:500;color:var(--marsala);margin:14px 0 6px}
+input,textarea{width:100%;font:inherit;border:1.5px solid var(--line);border-radius:12px;padding:12px 14px;background:var(--cream);color:var(--ink)}
+input:focus,textarea:focus{outline:none;border-color:var(--marsala)}
+textarea{min-height:70px;resize:vertical}
+.dica{font-size:13px;color:var(--muted);margin-top:4px}
+.cores{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.cores button{width:40px;height:40px;border-radius:50%;border:3px solid #fff;box-shadow:0 0 0 1.5px var(--line);cursor:pointer}
+.cores button[aria-pressed=true]{box-shadow:0 0 0 3px var(--ink)}
+.cores input[type=color]{width:52px;height:40px;padding:2px;border-radius:10px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;width:100%;margin-top:18px;font:500 16px Poppins,system-ui,sans-serif;border:0;border-radius:999px;padding:15px 22px;cursor:pointer;background:var(--marsala);color:#fff}
+.btn.claro{background:var(--gold-soft);color:var(--marsala-deep)}
+.btn.borda{background:transparent;color:var(--marsala);border:1.5px solid var(--marsala)}
+.btn:disabled{opacity:.55;cursor:wait}
+.msg{margin-top:14px;padding:12px 14px;border-radius:12px;font-size:15px;white-space:pre-line;display:none}
+.msg.ok{display:block;background:#EAF4EC;color:var(--ok)}
+.msg.erro{display:block;background:#F8E6E6;color:var(--erro)}
+.envio{border-top:1px solid var(--line);padding-top:16px;margin-top:16px}
+.envio:first-of-type{border-top:0;padding-top:0;margin-top:0}
+.envio b{color:var(--marsala)}
+.num{font-size:28px;color:var(--marsala);font-weight:600}
+.topo{display:flex;justify-content:space-between;align-items:center;font-family:Poppins,system-ui,sans-serif;font-size:14px;margin-bottom:16px}
+.topo a{color:var(--marsala)}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+<header>
+  <img src="img/logo-horizontal-claro.png" alt="Chá de Mulheres – Gerando Testemunho">
+  <p>Administração</p>
+</header>
+<main>
+  <!-- Entrar -->
+  <section class="box" id="entrar">
+    <h2>Entrar</h2>
+    <p class="sub">Área só das organizadoras.</p>
+    <form id="f-entrar">
+      <label for="senha">Senha</label>
+      <input id="senha" type="password" autocomplete="current-password" required>
+      <button class="btn" type="submit">Entrar</button>
+    </form>
+    <div class="msg" id="m-entrar"></div>
+  </section>
+
+  <div id="painel" hidden>
+    <div class="topo"><a href="./" target="_blank" rel="noopener">Ver o site →</a><a href="#" id="sair">Sair</a></div>
+
+    <!-- Dados do Chá -->
+    <section class="box">
+      <h2>Próximo Chá</h2>
+      <p class="sub">O que você salvar aqui aparece no site na hora (contador, convite, agenda e mapa).</p>
+      <form id="f-cha">
+        <label for="data">Data</label>
+        <input id="data" type="date">
+        <div class="dica">Deixe em branco se ainda não tiver data: o site mostra "Em breve, um novo Chá!".</div>
+        <label for="hora">Horário</label>
+        <input id="hora" type="text" placeholder="19h30">
+        <label for="local">Endereço</label>
+        <textarea id="local" placeholder="Rua, número – bairro, cidade"></textarea>
+        <label for="tema">Tema</label>
+        <input id="tema" type="text" placeholder="Ex.: Mulheres Posicionadas">
+        <label>Cor do site</label>
+        <div class="cores" id="cores">
+          <button type="button" data-cor="#7A4554" title="Marsala" style="background:#7A4554"></button>
+          <button type="button" data-cor="#9C5A73" title="Rosa antigo" style="background:#9C5A73"></button>
+          <button type="button" data-cor="#6E4E7E" title="Lilás" style="background:#6E4E7E"></button>
+          <button type="button" data-cor="#4F6B58" title="Verde-oliva" style="background:#4F6B58"></button>
+          <button type="button" data-cor="#3E5C76" title="Azul" style="background:#3E5C76"></button>
+          <button type="button" data-cor="#8A5A3C" title="Terracota" style="background:#8A5A3C"></button>
+          <input id="cor" type="color" value="#7A4554" title="Outra cor">
+        </div>
+        <button class="btn" type="submit">Salvar</button>
+      </form>
+      <div class="msg" id="m-cha"></div>
+    </section>
+
+    <!-- WhatsApp -->
+    <section class="box">
+      <h2>Mensagens</h2>
+      <p class="sub">Use depois de salvar a data. Ninguém recebe a mesma mensagem duas vezes.</p>
+      <div class="envio">
+        <b>📅 Avisar a lista do próximo Chá</b>
+        <p class="sub" style="margin:4px 0 0">Para quem pediu "Avise-me". Use quando marcar a data.</p>
+        <div class="num" id="n-aviso">–</div>
+        <button class="btn claro" id="b-aviso" type="button">Avisar a lista</button>
+      </div>
+      <div class="envio">
+        <b>🌸 Lembrete do dia</b>
+        <p class="sub" style="margin:4px 0 0">Para as inscritas. Use na manhã do dia do Chá.</p>
+        <div class="num" id="n-lembrete">–</div>
+        <button class="btn claro" id="b-lembrete" type="button">Enviar lembrete</button>
+      </div>
+      <div class="envio">
+        <b>🧪 Teste</b>
+        <p class="sub" style="margin:4px 0 0">Manda o aviso só para um número, para ver como chega.</p>
+        <label for="tel">WhatsApp com 55 e DDD</label>
+        <input id="tel" type="tel" inputmode="numeric" placeholder="5516999999999">
+        <button class="btn borda" id="b-teste" type="button">Enviar teste</button>
+      </div>
+      <div class="msg" id="m-envio"></div>
+    </section>
+  </div>
+</main>
+<script src="config.js"></script>
+<script>
+const URL_ROBO = window.CHA_CONFIG_URL || "";
+let senha = "";
+try { senha = sessionStorage.getItem("cha-senha") || ""; } catch (_) {}
+let custoMsg = 0.05;
+const $ = id => document.getElementById(id);
+function msg(id, texto, ok) { const m = $(id); m.textContent = texto; m.className = "msg " + (ok ? "ok" : "erro"); }
+
+async function pedir(dados) {
+  if (!URL_ROBO) throw new Error("O endereço do robozinho ainda não foi configurado.");
+  const r = await fetch(URL_ROBO, { method: "POST", body: JSON.stringify(Object.assign({ senha }, dados)) });
+  return r.json();
+}
+
+function preencher(p) {
+  const c = p.config;
+  $("data").value = c.data; $("hora").value = c.hora; $("local").value = c.local; $("tema").value = c.tema;
+  marcarCor(c.cor || "#7A4554");
+  $("n-aviso").textContent = p.aviso + (p.aviso === 1 ? " mulher" : " mulheres");
+  $("n-lembrete").textContent = p.lembrete + (p.lembrete === 1 ? " mulher" : " mulheres");
+  custoMsg = p.custoMsg || custoMsg;
+  if (!p.whatsapp) msg("m-envio", "O WhatsApp ainda não foi configurado na planilha (menu Chá de Mulheres → Configurar WhatsApp).", false);
+}
+function marcarCor(cor) {
+  $("cor").value = cor;
+  document.querySelectorAll("#cores button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.cor.toLowerCase() === cor.toLowerCase())));
+}
+document.querySelectorAll("#cores button").forEach(b => b.addEventListener("click", () => marcarCor(b.dataset.cor)));
+$("cor").addEventListener("input", e => marcarCor(e.target.value));
+
+async function entrar() {
+  const btn = document.querySelector("#f-entrar button"); btn.disabled = true; btn.textContent = "Entrando...";
+  try {
+    const r = await pedir({ acao: "painel" });
+    if (!r.ok) { msg("m-entrar", r.erro, false); senha = ""; try { sessionStorage.removeItem("cha-senha"); } catch (_) {} return; }
+    try { sessionStorage.setItem("cha-senha", senha); } catch (_) {}
+    $("entrar").hidden = true; $("painel").hidden = false; preencher(r.painel);
+  } catch (e) { msg("m-entrar", "Não consegui falar com a planilha. " + e.message, false); }
+  finally { btn.disabled = false; btn.textContent = "Entrar"; }
+}
+$("f-entrar").addEventListener("submit", e => { e.preventDefault(); senha = $("senha").value; entrar(); });
+$("sair").addEventListener("click", e => { e.preventDefault(); try { sessionStorage.removeItem("cha-senha"); } catch (_) {} location.reload(); });
+
+$("f-cha").addEventListener("submit", async e => {
+  e.preventDefault();
+  const btn = e.target.querySelector("button[type=submit]"); btn.disabled = true; btn.textContent = "Salvando...";
+  try {
+    const r = await pedir({ acao: "salvar", data: $("data").value, hora: $("hora").value, local: $("local").value, tema: $("tema").value, cor: $("cor").value });
+    if (r.ok) { preencher(r.painel); msg("m-cha", "Salvo! ✅ O site já mostra os dados novos (pode levar 1 minuto).", true); }
+    else msg("m-cha", r.erro, false);
+  } catch (e) { msg("m-cha", "Não consegui salvar. " + e.message, false); }
+  finally { btn.disabled = false; btn.textContent = "Salvar"; }
+});
+
+async function enviar(acao, btn, n, rotulo) {
+  if (!n) { msg("m-envio", "Não tem ninguém para receber agora.", false); return; }
+  const custo = "R$ " + (n * custoMsg).toFixed(2).replace(".", ",");
+  if (!confirm(rotulo + " para " + n + (n === 1 ? " mulher" : " mulheres") + "?\n\nCusto aproximado: " + custo)) return;
+  const txt = btn.textContent; btn.disabled = true; btn.textContent = "Enviando... (não feche a página)";
+  try {
+    const r = await pedir({ acao });
+    if (r.ok) { preencher(r.painel); msg("m-envio", r.msg, true); } else msg("m-envio", r.erro, false);
+  } catch (e) { msg("m-envio", "Não consegui enviar. " + e.message, false); }
+  finally { btn.disabled = false; btn.textContent = txt; }
+}
+$("b-aviso").addEventListener("click", e => enviar("avisar", e.currentTarget, parseInt($("n-aviso").textContent) || 0, "Enviar o aviso do próximo Chá"));
+$("b-lembrete").addEventListener("click", e => {
+  const hoje = new Date(); const d = $("data").value;
+  const ehHoje = d === [hoje.getFullYear(), String(hoje.getMonth() + 1).padStart(2, "0"), String(hoje.getDate()).padStart(2, "0")].join("-");
+  if (!ehHoje && !confirm("Atenção: a mensagem diz \"hoje\", mas o Chá não está marcado para hoje. Continuar mesmo assim?")) return;
+  enviar("lembrar", e.currentTarget, parseInt($("n-lembrete").textContent) || 0, "Enviar o lembrete do dia");
+});
+$("b-teste").addEventListener("click", async e => {
+  const btn = e.currentTarget, numero = $("tel").value.replace(/\D/g, "");
+  if (numero.length < 12) { msg("m-envio", "Digite o número com 55 e DDD, só números.", false); return; }
+  btn.disabled = true;
+  try { const r = await pedir({ acao: "testar", numero }); r.ok ? msg("m-envio", r.msg, true) : msg("m-envio", r.erro, false); }
+  catch (e) { msg("m-envio", "Não consegui enviar. " + e.message, false); }
+  finally { btn.disabled = false; }
+});
+
+if (senha) entrar();
+</script>
+</body>
+</html>
