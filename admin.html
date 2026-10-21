@@ -82,7 +82,7 @@ textarea{min-height:70px;resize:vertical}
 .mm.polaroid{border:3px solid #fbf6f1;border-bottom-width:9px;border-radius:1px;transform:rotate(-4deg)}
 .mm.simples{border-radius:6px}
 .abas{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px}
-.abas a{flex:1 1 28%;text-align:center;font:500 14px Poppins,system-ui,sans-serif;color:var(--gold-soft);text-decoration:none;padding:11px 8px;border:1.5px solid var(--line);border-radius:14px;background:var(--card)}
+.abas a{flex:1 1 20%;text-align:center;font:500 13px Poppins,system-ui,sans-serif;color:var(--gold-soft);text-decoration:none;padding:11px 8px;border:1.5px solid var(--line);border-radius:14px;background:var(--card)}
 .abas a i{display:block;font-style:normal;margin-bottom:2px}
 .abas a.ativa{background:var(--gold-soft);color:var(--deep);border-color:var(--gold-soft)}
 .abas .sep{flex-basis:100%;height:0}
@@ -116,6 +116,16 @@ textarea{min-height:70px;resize:vertical}
 .pedidos .ignorar{flex:none;font:12px Poppins,system-ui,sans-serif;background:none;border:0;color:var(--muted);text-decoration:underline;cursor:pointer}
 .bolinha{display:inline-block;min-width:20px;padding:0 6px;margin-left:4px;border-radius:999px;background:var(--erro);color:#2a0d12;font:600 12px/20px Poppins,system-ui,sans-serif;text-align:center}
 .tirar-nome{float:right;font:500 12px Poppins,system-ui,sans-serif;color:var(--erro);background:none;border:1px solid color-mix(in srgb,var(--erro) 60%,transparent);border-radius:999px;padding:3px 10px;cursor:pointer;margin-left:8px}
+.links{display:grid;gap:16px;grid-template-columns:repeat(auto-fill,minmax(300px,1fr))}
+.link-card{display:flex;flex-direction:column;gap:10px;padding:16px;border:1px solid var(--line);border-radius:16px;background:var(--campo)}
+.lk-top{display:flex;gap:12px;align-items:flex-start}
+.lk-ico{flex:none;font-size:26px;line-height:1}
+.lk-top b{color:var(--gold-soft);font-size:17px}
+.lk-top p{margin:2px 0 0;font-size:14px;color:var(--muted)}
+.link-card code{display:block;font:13px Poppins,system-ui,sans-serif;color:var(--cream);background:rgba(0,0,0,.18);border-radius:8px;padding:8px 10px;overflow-wrap:anywhere}
+.lk-bts{display:flex;gap:8px;flex-wrap:wrap;margin-top:auto}
+.lk-bts button,.lk-bts a{flex:1;white-space:nowrap;text-align:center;font:500 14px Poppins,system-ui,sans-serif;border-radius:999px;padding:9px 10px;cursor:pointer;text-decoration:none;border:1.5px solid var(--gold-soft);color:var(--gold-soft);background:none}
+.lk-bts .copiar{background:var(--gold-soft);color:var(--deep)}
 .dois{display:grid;gap:0 16px}
 .dois.botoes{gap:0 12px}
 @media(min-width:600px){
@@ -175,6 +185,7 @@ textarea{min-height:70px;resize:vertical}
       <a href="#cha" data-aba="cha"><i>📅</i> Próximo Chá</a>
       <a href="#mensagens" data-aba="mensagens"><i>💬</i> Mensagens <span class="bolinha" id="n-pedidos" hidden></span></a>
       <a href="#galeria" data-aba="galeria"><i>📷</i> Galeria</a>
+      <a href="#links" data-aba="links"><i>🔗</i> Links</a>
       <span class="sep"></span>
       <a href="./" target="_blank" rel="noopener" class="fraco">Ver o site →</a>
       <a href="#" id="sair" class="fraco">Sair</a>
@@ -294,6 +305,14 @@ textarea{min-height:70px;resize:vertical}
       </div>
     </section>
 
+    <!-- Links para copiar e mandar -->
+    <section class="box" data-aba="links">
+      <h2>Links</h2>
+      <p class="sub">Para copiar e mandar para quem precisar.</p>
+      <div class="links" id="links"></div>
+      <div class="msg" id="m-links"></div>
+    </section>
+
     <!-- Nomes de quem recebe a mensagem -->
     <section class="box s-nomes" data-aba="nomes">
       <a href="#mensagens" class="voltar">← Voltar</a>
@@ -332,6 +351,7 @@ function preencher(p) {
   $("n-lembrete").textContent = p.lembrete + (p.lembrete === 1 ? " mulher" : " mulheres");
   listaNomes("aviso", p.avisoNomes); listaNomes("lembrete", p.lembreteNomes);
   listaPedidos(p.pedidosSair || []);
+  montarLinks(p.planilha);
   custoMsg = p.custoMsg || custoMsg;
   proximoCha = { data: c.data || "", tema: c.tema || "" };
   if (Array.isArray(c.galeria)) { galeria = c.galeria; if (!editando) listaGaleria(); }
@@ -516,6 +536,38 @@ function abrirNomes(tipo) {
     ol.appendChild(li);
   });
 }
+const SITE_URL = "https://chademulheres.github.io/";
+function montarLinks(planilha) {
+  const L = [
+    { ico: "📱", tit: "Aplicativo do contador", txt: "Mostra quantas inscritas tem até agora. Mande para as organizadoras instalarem no celular.", url: SITE_URL + "contador.html",
+      zap: "Oi! Este é o contador de inscritas do Chá de Mulheres 🌸\n" + SITE_URL + "contador.html\n\nPara instalar no celular: abra o link no Chrome, toque nos 3 pontinhos (⋮) e em \"Instalar app\" (no iPhone, pelo Safari: botão Compartilhar → \"Adicionar à Tela de Início\")." },
+    { ico: "📊", tit: "Planilha das inscrições", txt: "Abre a planilha no Google. Só funciona na conta da dona.", url: planilha || "" },
+    { ico: "🔒", tit: "Área das organizadoras", txt: "Esta página. Para entrar precisa da senha.", url: SITE_URL + "admin.html" },
+    { ico: "🌸", tit: "Site do Chá", txt: "O site para divulgar.", url: SITE_URL, zap: "Conheça o Chá de Mulheres – Gerando Testemunho 🌸\n" + SITE_URL },
+    { ico: "📝", tit: "Inscrição", txt: "Formulário para se inscrever no próximo Chá.", url: "https://tinyurl.com/chademulheresrp", zap: "Faça sua inscrição no Chá de Mulheres 🌸\nhttps://tinyurl.com/chademulheresrp" },
+    { ico: "🔔", tit: "Avise-me", txt: "Para quem quer ser avisada dos próximos Chás.", url: "https://tally.so/r/jeDYOx", zap: "Quer ser avisada quando tiver Chá de Mulheres? 🌸\nhttps://tally.so/r/jeDYOx" },
+  ];
+  const el = $("links"); el.innerHTML = "";
+  L.filter(x => x.url).forEach(x => {
+    const d = document.createElement("div"); d.className = "link-card";
+    d.innerHTML = '<div class="lk-top"><span class="lk-ico"></span><div><b></b><p></p></div></div><code></code><div class="lk-bts"><button type="button" class="copiar">Copiar</button><a class="abrir" target="_blank" rel="noopener">Abrir ↗</a></div>';
+    d.querySelector(".lk-ico").textContent = x.ico; d.querySelector("b").textContent = x.tit;
+    d.querySelector("p").textContent = x.txt; d.querySelector("code").textContent = x.url;
+    d.querySelector(".abrir").href = x.url;
+    if (x.zap) {
+      const z = document.createElement("a"); z.className = "zap"; z.target = "_blank"; z.rel = "noopener";
+      z.href = "https://wa.me/?text=" + encodeURIComponent(x.zap); z.textContent = "WhatsApp";
+      d.querySelector(".lk-bts").appendChild(z);
+    }
+    d.querySelector(".copiar").addEventListener("click", async e => {
+      const b = e.currentTarget;
+      try { await navigator.clipboard.writeText(x.url); }
+      catch (_) { const t = document.createElement("textarea"); t.value = x.url; document.body.appendChild(t); t.select(); document.execCommand("copy"); t.remove(); }
+      b.textContent = "Copiado ✓"; setTimeout(() => b.textContent = "Copiar", 1800);
+    });
+    el.appendChild(d);
+  });
+}
 function listaPedidos(lista) {
   const ul = $("pedidos"); ul.innerHTML = "";
   $("n-pedidos").hidden = !lista.length; $("n-pedidos").textContent = lista.length;
@@ -555,7 +607,7 @@ $("b-sair").addEventListener("click", () => {
 // abas: cada parte da administração numa página (o botão voltar do navegador também funciona)
 function mostrarAba() {
   const h = location.hash.slice(1);
-  let aba = ["cha", "mensagens", "galeria"].includes(h) ? h : "cha";
+  let aba = ["cha", "mensagens", "galeria", "links"].includes(h) ? h : "cha";
   if (h === "nomes-aviso" || h === "nomes-lembrete") { aba = "nomes"; abrirNomes(h.slice(6)); }
   document.querySelectorAll("section[data-aba]").forEach(s => s.hidden = s.dataset.aba !== aba);
   const atual = aba === "nomes" ? "mensagens" : aba;
