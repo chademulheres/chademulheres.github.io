@@ -106,6 +106,15 @@ textarea{min-height:70px;resize:vertical}
 .gal-card.novo button{background:var(--gold-soft);color:var(--deep)}
 .sair-box{border-top:1px solid var(--line);margin-top:22px;padding-top:18px}
 .sair-box b{color:var(--gold-soft)}
+.pedidos{list-style:none;margin:12px 0 0;padding:0;display:grid;gap:8px;grid-template-columns:repeat(auto-fill,minmax(300px,1fr))}
+.pedidos li{display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:var(--campo)}
+.pedidos li div{flex:1;min-width:0}
+.pedidos li b{display:block;color:var(--cream);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pedidos li small{font:12px Poppins,system-ui,sans-serif;color:var(--muted)}
+.pedidos li.vazio{color:var(--muted);font-size:14px}
+.pedidos .x{flex:none;width:36px;height:36px;border-radius:50%;border:1.5px solid var(--erro);background:none;color:var(--erro);font-size:16px;cursor:pointer}
+.pedidos .ignorar{flex:none;font:12px Poppins,system-ui,sans-serif;background:none;border:0;color:var(--muted);text-decoration:underline;cursor:pointer}
+.bolinha{display:inline-block;min-width:20px;padding:0 6px;margin-left:4px;border-radius:999px;background:var(--erro);color:#2a0d12;font:600 12px/20px Poppins,system-ui,sans-serif;text-align:center}
 .tirar-nome{float:right;font:500 12px Poppins,system-ui,sans-serif;color:var(--erro);background:none;border:1px solid color-mix(in srgb,var(--erro) 60%,transparent);border-radius:999px;padding:3px 10px;cursor:pointer;margin-left:8px}
 .dois{display:grid;gap:0 16px}
 .dois.botoes{gap:0 12px}
@@ -164,7 +173,7 @@ textarea{min-height:70px;resize:vertical}
   <div id="painel" hidden>
     <nav class="abas">
       <a href="#cha" data-aba="cha"><i>📅</i> Próximo Chá</a>
-      <a href="#mensagens" data-aba="mensagens"><i>💬</i> Mensagens</a>
+      <a href="#mensagens" data-aba="mensagens"><i>💬</i> Mensagens <span class="bolinha" id="n-pedidos" hidden></span></a>
       <a href="#galeria" data-aba="galeria"><i>📷</i> Galeria</a>
       <span class="sep"></span>
       <a href="./" target="_blank" rel="noopener" class="fraco">Ver o site →</a>
@@ -276,8 +285,10 @@ textarea{min-height:70px;resize:vertical}
       </div>
       <div class="msg" id="m-envio"></div>
       <div class="sair-box">
-        <b>🚫 Alguém pediu para sair?</b>
-        <p class="sub" style="margin:4px 0 0">Digite o WhatsApp de quem respondeu SAIR. Ela não recebe mais nenhuma mensagem do Chá. Também dá para tirar pelo "Ver os nomes".</p>
+        <b>🚫 Pediram para sair</b>
+        <p class="sub" style="margin:4px 0 0">Quem pediu para não receber mais mensagens aparece aqui. Clique no ✕ para tirar da lista.</p>
+        <ul class="pedidos" id="pedidos"></ul>
+        <p class="sub" style="margin:14px 0 0">Alguém pediu de outro jeito (pessoalmente, por ligação)? Digite o WhatsApp dela:</p>
         <div class="cor-linha" style="margin-top:10px"><input id="sair-num" type="tel" inputmode="numeric" placeholder="5516999999999"><button class="btn borda" id="b-sair" type="button" style="width:auto;margin:0;padding:12px 22px">Tirar</button></div>
         <div class="msg" id="m-sair"></div>
       </div>
@@ -320,6 +331,7 @@ function preencher(p) {
   $("n-aviso").textContent = p.aviso + (p.aviso === 1 ? " mulher" : " mulheres");
   $("n-lembrete").textContent = p.lembrete + (p.lembrete === 1 ? " mulher" : " mulheres");
   listaNomes("aviso", p.avisoNomes); listaNomes("lembrete", p.lembreteNomes);
+  listaPedidos(p.pedidosSair || []);
   custoMsg = p.custoMsg || custoMsg;
   proximoCha = { data: c.data || "", tema: c.tema || "" };
   if (Array.isArray(c.galeria)) { galeria = c.galeria; if (!editando) listaGaleria(); }
@@ -502,6 +514,25 @@ function abrirNomes(tipo) {
       li.appendChild(b);
     }
     ol.appendChild(li);
+  });
+}
+function listaPedidos(lista) {
+  const ul = $("pedidos"); ul.innerHTML = "";
+  $("n-pedidos").hidden = !lista.length; $("n-pedidos").textContent = lista.length;
+  if (!lista.length) { ul.innerHTML = '<li class="vazio">Ninguém pediu para sair. 🌸</li>'; return; }
+  lista.forEach(x => {
+    const li = document.createElement("li");
+    li.innerHTML = '<div><b></b><small></small></div><button type="button" class="ignorar" title="Não tirar (pedido por engano)">Ignorar</button><button type="button" class="x" title="Tirar da lista">✕</button>';
+    li.querySelector("b").textContent = x.nome || "Sem nome na planilha";
+    li.querySelector("small").textContent = "final " + x.num.slice(-4) + " · " + x.quando + " · pelo " + x.origem;
+    li.querySelector(".x").addEventListener("click", e => tirarDaLista(x.num, x.nome, "m-sair", e.currentTarget));
+    li.querySelector(".ignorar").addEventListener("click", async e => {
+      if (!confirm("Ignorar o pedido? " + (x.nome || x.num) + " continua recebendo as mensagens.")) return;
+      e.currentTarget.disabled = true;
+      const r = await pedir({ acao: "ignorar_pedido", numero: x.num });
+      if (r.ok) preencher(r.painel); else msg("m-sair", r.erro, false);
+    });
+    ul.appendChild(li);
   });
 }
 async function tirarDaLista(num, nome, caixa, btn) {

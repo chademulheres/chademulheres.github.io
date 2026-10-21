@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<meta name="theme-color" content="#3F2530">
+<title>Parar de receber · Chá de Mulheres</title>
+<link rel="icon" href="icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Pinyon+Script&family=Lora:ital,wght@0,400;0,600;1,400&family=Poppins:wght@400;500&display=swap">
+<style>
+:root{--marsala:#7A4554;--deep:color-mix(in srgb,var(--marsala) 52%,#12080c);--card:color-mix(in srgb,var(--marsala) 34%,#1a0d12);--gold-soft:#E7C9A0;--cream:#FCF5F3;--muted:rgba(252,245,243,.62);--line:rgba(231,201,160,.22);--erro:#F2A7A7}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:22px;padding:28px 16px;color:var(--cream);font:16px/1.55 Lora,Georgia,serif;text-align:center;background:var(--deep) radial-gradient(ellipse at 50% 30%,color-mix(in srgb,var(--marsala) 75%,transparent),transparent 70%) no-repeat}
+img{width:min(80vw,380px);height:auto}
+.card{width:min(100%,440px);background:var(--card);border:1px solid var(--line);border-radius:24px;padding:28px 22px;box-shadow:0 14px 40px rgba(0,0,0,.3)}
+h1{font-family:"Pinyon Script",cursive;font-weight:400;font-size:40px;color:var(--gold-soft);margin:0 0 8px;line-height:1.1}
+p{margin:0 0 14px;color:var(--muted)}
+label{display:block;text-align:left;font:500 13px Poppins,system-ui,sans-serif;color:var(--gold-soft);margin:6px 0}
+input{width:100%;font:inherit;border:1.5px solid var(--line);border-radius:12px;padding:12px 14px;background:rgba(255,255,255,.07);color:var(--cream)}
+button{width:100%;margin-top:16px;font:500 16px Poppins,system-ui,sans-serif;border:0;border-radius:999px;padding:14px;cursor:pointer;background:var(--gold-soft);color:var(--deep)}
+button:disabled{opacity:.6;cursor:wait}
+.erro{color:var(--erro);margin-top:12px}
+a{color:var(--gold-soft);font-family:Poppins,system-ui,sans-serif;font-size:14px}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+<picture><source media="(min-width:700px)" srcset="img/logo-horizontal-claro.png"><img src="img/logo-vertical-claro.png" alt="Chá de Mulheres – Gerando Testemunho"></picture>
+<div class="card">
+  <form id="f">
+    <h1>Que pena!</h1>
+    <p>Não quer mais receber as mensagens do Chá de Mulheres pelo WhatsApp? Confirme o seu número:</p>
+    <label for="num">Seu WhatsApp com DDD</label>
+    <input id="num" type="tel" inputmode="numeric" placeholder="(16) 99999-9999" autocomplete="tel">
+    <button type="submit">Não quero mais receber</button>
+    <div class="erro" id="erro" hidden></div>
+  </form>
+  <div id="ok" hidden>
+    <h1>Pronto 🌸</h1>
+    <p>Recebemos o seu pedido. Em breve você deixa de receber as mensagens do Chá.</p>
+    <p>Se mudar de ideia, é só se cadastrar de novo no site. As portas estão sempre abertas!</p>
+  </div>
+</div>
+<a href="./">Ir para o site do Chá →</a>
+<script src="config.js"></script>
+<script>
+// o botão da mensagem do WhatsApp abre esta página com o número: sair.html?n=5516999999999
+const n = (new URLSearchParams(location.search).get("n") || "").replace(/\D/g, "");
+if (n) document.getElementById("num").value = n;
+try { const c = JSON.parse(localStorage.getItem("cha-config") || "null"); if (c && /^#[0-9a-f]{6}$/i.test(c.cor || "")) document.documentElement.style.setProperty("--marsala", c.cor); } catch (_) {}
+document.getElementById("f").addEventListener("submit", async e => {
+  e.preventDefault();
+  const num = document.getElementById("num").value.replace(/\D/g, ""), erro = document.getElementById("erro"), b = e.target.querySelector("button");
+  erro.hidden = true;
+  if (num.length < 10) { erro.textContent = "Digite o número com DDD."; erro.hidden = false; return; }
+  b.disabled = true; b.textContent = "Enviando...";
+  try {
+    const r = await (await fetch(window.CHA_CONFIG_URL, { method: "POST", body: JSON.stringify({ acao: "pedir_sair", numero: num }) })).json();
+    if (!r.ok) throw new Error(r.erro || "");
+    document.getElementById("f").hidden = true; document.getElementById("ok").hidden = false;
+  } catch (err) {
+    erro.textContent = "Não deu certo agora. " + (err.message || "Tente de novo em alguns minutos."); erro.hidden = false;
+  } finally { b.disabled = false; b.textContent = "Não quero mais receber"; }
+});
+</script>
+</body>
+</html>
