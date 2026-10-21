@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<meta name="theme-color" content="#3F2530">
+<title>Inscritas · Chá de Mulheres</title>
+<link rel="icon" href="icon.png">
+<link rel="apple-touch-icon" href="icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Pinyon+Script&family=Lora:ital,wght@0,400;0,600;1,400&family=Poppins:wght@400;500&display=swap">
+<style>
+:root{--marsala:#7A4554;--deep:color-mix(in srgb,var(--marsala) 52%,#12080c);--card:color-mix(in srgb,var(--marsala) 34%,#1a0d12);--gold-soft:#E7C9A0;--cream:#FCF5F3;--muted:rgba(252,245,243,.62);--line:rgba(231,201,160,.22)}
+*{box-sizing:border-box}
+html,body{min-height:100%}
+body{margin:0;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:22px;padding:28px 16px;color:var(--cream);font:16px/1.5 Lora,Georgia,serif;text-align:center;background:var(--deep) radial-gradient(ellipse at 50% 30%,color-mix(in srgb,var(--marsala) 75%,transparent),transparent 70%) no-repeat}
+img{width:min(80vw,380px);height:auto}
+.card{width:min(100%,420px);background:var(--card);border:1px solid var(--line);border-radius:24px;padding:30px 20px 26px;box-shadow:0 14px 40px rgba(0,0,0,.3)}
+.rot{font-family:Poppins,system-ui,sans-serif;font-size:12px;letter-spacing:.3em;text-transform:uppercase;color:var(--gold-soft)}
+.num{font-size:clamp(84px,26vw,128px);font-weight:600;line-height:1;margin:10px 0 2px;color:var(--cream)}
+.de{font-family:"Pinyon Script",cursive;font-size:34px;color:var(--gold-soft);line-height:1.1}
+.info{color:var(--muted);font-size:15px;margin-top:10px}
+.faltam{margin-top:18px;padding-top:16px;border-top:1px solid var(--line);font-family:Poppins,system-ui,sans-serif;font-size:14px;color:var(--gold-soft)}
+.at{font-family:Poppins,system-ui,sans-serif;font-size:12px;color:var(--muted)}
+</style>
+</head>
+<body>
+<picture><source media="(min-width:700px)" srcset="img/logo-horizontal-claro.png"><img src="img/logo-vertical-claro.png" alt="Chá de Mulheres – Gerando Testemunho"></picture>
+<div class="card">
+  <div class="rot">Inscritas até agora</div>
+  <div class="num" id="num">–</div>
+  <div class="de" id="tema">Chá de Mulheres</div>
+  <div class="info" id="info"></div>
+  <div class="faltam" id="faltam" hidden></div>
+</div>
+<div class="at" id="at">Atualizando...</div>
+<script src="config.js"></script>
+<script>
+const MESES=["janeiro","fevereiro","março","abril","maio","junho","julho","agosto","setembro","outubro","novembro","dezembro"];
+const DIAS=["domingo","segunda-feira","terça-feira","quarta-feira","quinta-feira","sexta-feira","sábado"];
+function mostrar(c){
+  if(!c) return;
+  if(/^#[0-9a-f]{6}$/i.test(c.cor||"")){document.documentElement.style.setProperty("--marsala",c.cor);}
+  if(typeof c.total==="number") document.getElementById("num").textContent=c.total;
+  document.getElementById("tema").textContent=c.tema||"Chá de Mulheres";
+  if(c.data){
+    const [y,m,d]=c.data.split("-").map(Number);
+    document.getElementById("info").textContent=DIAS[new Date(y,m-1,d).getDay()]+", "+d+" de "+MESES[m-1]+(c.hora?" · "+c.hora:"");
+    const hoje=new Date(); const dias=Math.round((new Date(y,m-1,d)-new Date(hoje.getFullYear(),hoje.getMonth(),hoje.getDate()))/864e5);
+    const f=document.getElementById("faltam"); f.hidden=dias<0;
+    f.textContent=dias===0?"É hoje! 🌷":dias===1?"Falta 1 dia":"Faltam "+dias+" dias";
+  }
+}
+async function atualizar(){
+  try{
+    const c=await (await fetch(window.CHA_CONFIG_URL,{cache:"no-store"})).json();
+    mostrar(c); try{localStorage.setItem("cha-config",JSON.stringify(c));}catch(_){}
+    document.getElementById("at").textContent="Atualizado às "+new Date().toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"})+" · atualiza sozinho a cada minuto";
+  }catch(e){document.getElementById("at").textContent="Sem conexão agora. Tentando de novo em 1 minuto...";}
+}
+try{mostrar(JSON.parse(localStorage.getItem("cha-config")||"null"));}catch(_){}
+atualizar(); setInterval(atualizar,60000);
+</script>
+</body>
+</html>
