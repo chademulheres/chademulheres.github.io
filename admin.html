@@ -147,6 +147,14 @@ textarea{min-height:70px;resize:vertical}
   .ins-folha th{-webkit-print-color-adjust:exact;print-color-adjust:exact}
   .ins-folha tbody tr:nth-child(even) td{-webkit-print-color-adjust:exact;print-color-adjust:exact}
   .ins-folha tr{break-inside:avoid}
+  /* compacto: mais gente por folha */
+  .ins-logo{width:150px;margin-bottom:0}
+  .ins-folha h3{font-size:14px;margin:2px 0 0}
+  .ins-sub{font-size:9px;margin:0 0 6px}
+  .ins-folha table{font-size:9.5px;line-height:1.25}
+  .ins-folha th{padding:4px 5px}
+  .ins-folha td{padding:2.5px 5px}
+  .ins-folha thead{display:table-header-group}
 }
 .dois{display:grid;gap:0 16px}
 .dois.botoes{gap:0 12px}
@@ -625,7 +633,10 @@ async function carregarInscritas(nomeAba) {
     const th = document.createElement("tr"); ["Nº"].concat(L.cab).forEach(c => { const e = document.createElement("th"); e.textContent = c; th.appendChild(e); });
     const thead = document.createElement("thead"); thead.appendChild(th); t.appendChild(thead);
     const tb = document.createElement("tbody");
-    L.linhas.forEach((l, i) => { const tr = document.createElement("tr"); [String(i + 1)].concat(l).forEach(c => { const e = document.createElement("td"); e.textContent = c; tr.appendChild(e); }); tb.appendChild(tr); });
+    const cData = L.cab.indexOf("Inscrita em");
+    L.linhas.forEach((l, i) => { const tr = document.createElement("tr");
+      if (cData >= 0) { const m = String(l[cData]).match(/(\d{1,2})\/(\d{1,2})\/\d{2,4}/) || String(l[cData]).match(/\d{4}-(\d{2})-(\d{2})/); if (m) l[cData] = m[0].indexOf("-") > 0 ? m[2] + "/" + m[1] : m[1].padStart(2, "0") + "/" + m[2].padStart(2, "0"); }
+      [String(i + 1)].concat(l).forEach(c => { const e = document.createElement("td"); e.textContent = c; tr.appendChild(e); }); tb.appendChild(tr); });
     if (!L.linhas.length) tb.innerHTML = '<tr><td>Nenhuma inscrita nesta lista.</td></tr>';
     t.appendChild(tb);
   } catch (e) { msg("m-ins", "Não consegui falar com a planilha. " + e.message, false); insCarregada = false; }
