@@ -81,8 +81,8 @@ textarea{min-height:70px;resize:vertical}
 .mm.arco{border:2px solid var(--gold-soft);border-radius:20px 20px 4px 4px}
 .mm.polaroid{border:3px solid #fbf6f1;border-bottom-width:9px;border-radius:1px;transform:rotate(-4deg)}
 .mm.simples{border-radius:6px}
-.abas{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px}
-.abas a{flex:1 1 20%;text-align:center;font:500 13px Poppins,system-ui,sans-serif;color:var(--gold-soft);text-decoration:none;padding:11px 8px;border:1.5px solid var(--line);border-radius:14px;background:var(--card)}
+.abas{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:18px}
+.abas a{flex:1 1 0;min-width:0;text-align:center;font:500 11px Poppins,system-ui,sans-serif;color:var(--gold-soft);text-decoration:none;padding:10px 2px;border:1.5px solid var(--line);border-radius:14px;background:var(--card)}
 .abas a i{display:block;font-style:normal;margin-bottom:2px}
 .abas a.ativa{background:var(--gold-soft);color:var(--deep);border-color:var(--gold-soft)}
 .abas .sep{flex-basis:100%;height:0}
@@ -126,6 +126,28 @@ textarea{min-height:70px;resize:vertical}
 .lk-bts{display:flex;gap:8px;flex-wrap:wrap;margin-top:auto}
 .lk-bts button,.lk-bts a{flex:1;white-space:nowrap;text-align:center;font:500 14px Poppins,system-ui,sans-serif;border-radius:999px;padding:9px 10px;cursor:pointer;text-decoration:none;border:1.5px solid var(--gold-soft);color:var(--gold-soft);background:none}
 .lk-bts .copiar{background:var(--gold-soft);color:var(--deep)}
+.ins-bar{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-bottom:16px}
+.ins-bar select{font:inherit;border:1.5px solid var(--line);border-radius:12px;padding:11px 14px;background:var(--campo);color:var(--cream);color-scheme:dark;min-width:220px}
+.ins-folha{background:#fffaf7;color:#3a2229;border-radius:14px;padding:22px}
+.ins-logo{display:block;width:260px;max-width:70%;height:auto;margin:0 auto 6px}
+.ins-folha h3{margin:4px 0 2px;text-align:center;font:600 20px Lora,Georgia,serif;color:#5a2f3b}
+.ins-sub{text-align:center;margin:0 0 14px;font:12px Poppins,system-ui,sans-serif;color:#7a6066}
+.ins-rolar{overflow-x:auto}
+.ins-folha table{width:100%;border-collapse:collapse;font:13px Poppins,system-ui,sans-serif}
+.ins-folha th{background:#7A4554;color:#fff;text-align:left;padding:8px;font-weight:500;white-space:nowrap}
+.ins-folha td{padding:7px 8px;border-bottom:1px solid #ead9dc;vertical-align:top}
+.ins-folha tbody tr:nth-child(even) td{background:#f8eef0}
+@media print{
+  @page{size:A4 landscape;margin:12mm}
+  body{background:#fff!important}
+  body *{visibility:hidden}
+  #ins-folha,#ins-folha *{visibility:visible}
+  #ins-folha{position:absolute;left:0;top:0;width:100%;padding:0;border-radius:0}
+  .ins-rolar{overflow:visible}
+  .ins-folha th{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .ins-folha tbody tr:nth-child(even) td{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .ins-folha tr{break-inside:avoid}
+}
 .dois{display:grid;gap:0 16px}
 .dois.botoes{gap:0 12px}
 @media(min-width:600px){
@@ -185,6 +207,7 @@ textarea{min-height:70px;resize:vertical}
       <a href="#cha" data-aba="cha"><i>📅</i> Próximo Chá</a>
       <a href="#mensagens" data-aba="mensagens"><i>💬</i> Mensagens <span class="bolinha" id="n-pedidos" hidden></span></a>
       <a href="#galeria" data-aba="galeria"><i>📷</i> Galeria</a>
+      <a href="#inscritas" data-aba="inscritas"><i>📋</i> Inscritas</a>
       <a href="#links" data-aba="links"><i>🔗</i> Links</a>
       <span class="sep"></span>
       <a href="./" target="_blank" rel="noopener" class="fraco">Ver o site →</a>
@@ -305,6 +328,24 @@ textarea{min-height:70px;resize:vertical}
       </div>
     </section>
 
+    <!-- Lista das inscritas, para salvar em PDF -->
+    <section class="box" data-aba="inscritas" id="s-inscritas">
+      <h2>Inscritas</h2>
+      <p class="sub">A lista completa da planilha (sem a autorização do WhatsApp). Para guardar, clique em <b>Salvar em PDF</b>.</p>
+      <div class="ins-bar">
+        <label for="ins-aba" style="margin:0">Qual Chá?</label>
+        <select id="ins-aba"></select>
+        <button class="btn" id="ins-pdf" type="button" style="width:auto;margin:0;padding:12px 26px">📄 Salvar em PDF</button>
+      </div>
+      <div class="msg" id="m-ins"></div>
+      <div id="ins-folha" class="ins-folha">
+        <img class="ins-logo" src="img/logo-horizontal.png" alt="Chá de Mulheres">
+        <h3 id="ins-tit"></h3>
+        <p class="ins-sub" id="ins-sub"></p>
+        <div class="ins-rolar"><table id="ins-tab"></table></div>
+      </div>
+    </section>
+
     <!-- Links para copiar e mandar -->
     <section class="box" data-aba="links">
       <h2>Links</h2>
@@ -416,6 +457,7 @@ async function entrar() {
     if (!r.ok) { msg("m-entrar", r.erro, false); senha = ""; try { sessionStorage.removeItem("cha-senha"); } catch (_) {} return; }
     try { sessionStorage.setItem("cha-senha", senha); } catch (_) {}
     $("entrar").hidden = true; $("painel").hidden = false; preencher(r.painel);
+    if (location.hash === "#inscritas") carregarInscritas();
   } catch (e) { msg("m-entrar", "Não consegui falar com a planilha. " + e.message, false); }
   finally { btn.disabled = false; btn.textContent = "Entrar"; }
 }
@@ -565,6 +607,34 @@ function montarLinks(planilha) {
     el.appendChild(d);
   });
 }
+let insCarregada = false;
+async function carregarInscritas(nomeAba) {
+  insCarregada = true;
+  if (!senha) { insCarregada = false; return; }
+  $("ins-tit").textContent = "Carregando..."; $("ins-sub").textContent = ""; $("ins-tab").innerHTML = "";
+  try {
+    const r = await pedir({ acao: "inscritas", aba: nomeAba || "" });
+    if (!r.ok) { msg("m-ins", r.erro, false); return; }
+    const L = r.lista, sel = $("ins-aba");
+    sel.innerHTML = "";
+    L.abas.forEach(a => { const o = document.createElement("option"); o.value = a; o.textContent = a === "Inscrições" ? "Próximo Chá (lista atual)" : a; sel.appendChild(o); });
+    sel.value = L.aba;
+    $("ins-tit").textContent = "Inscritas · " + L.titulo;
+    $("ins-sub").textContent = L.linhas.length + (L.linhas.length === 1 ? " inscrita" : " inscritas") + " · lista tirada em " + new Date().toLocaleDateString("pt-BR") + " às " + new Date().toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
+    const t = $("ins-tab");
+    const th = document.createElement("tr"); ["Nº"].concat(L.cab).forEach(c => { const e = document.createElement("th"); e.textContent = c; th.appendChild(e); });
+    const thead = document.createElement("thead"); thead.appendChild(th); t.appendChild(thead);
+    const tb = document.createElement("tbody");
+    L.linhas.forEach((l, i) => { const tr = document.createElement("tr"); [String(i + 1)].concat(l).forEach(c => { const e = document.createElement("td"); e.textContent = c; tr.appendChild(e); }); tb.appendChild(tr); });
+    if (!L.linhas.length) tb.innerHTML = '<tr><td>Nenhuma inscrita nesta lista.</td></tr>';
+    t.appendChild(tb);
+  } catch (e) { msg("m-ins", "Não consegui falar com a planilha. " + e.message, false); insCarregada = false; }
+}
+$("ins-aba").addEventListener("change", e => carregarInscritas(e.target.value));
+$("ins-pdf").addEventListener("click", () => {
+  const t = document.title; document.title = $("ins-tit").textContent.replace(/[\/:]/g, "-");
+  window.print(); setTimeout(() => document.title = t, 1000);
+});
 function listaPedidos(lista) {
   const ul = $("pedidos"); ul.innerHTML = "";
   $("n-pedidos").hidden = !lista.length; $("n-pedidos").textContent = lista.length;
@@ -604,7 +674,8 @@ $("b-sair").addEventListener("click", () => {
 // abas: cada parte da administração numa página (o botão voltar do navegador também funciona)
 function mostrarAba() {
   const h = location.hash.slice(1);
-  let aba = ["cha", "mensagens", "galeria", "links"].includes(h) ? h : "cha";
+  let aba = ["cha", "mensagens", "galeria", "inscritas", "links"].includes(h) ? h : "cha";
+  if (aba === "inscritas" && !insCarregada) carregarInscritas();
   if (h === "nomes-aviso" || h === "nomes-lembrete") { aba = "nomes"; abrirNomes(h.slice(6)); }
   document.querySelectorAll("section[data-aba]").forEach(s => s.hidden = s.dataset.aba !== aba);
   const atual = aba === "nomes" ? "mensagens" : aba;
