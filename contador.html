@@ -91,7 +91,7 @@ a{color:#9474B8}
   </form>
   <div id="lista-tab" hidden>
     <p class="lista-tit" id="lista-tit"></p>
-    <div class="lista-bts"><button type="button" id="b-pdf">📄 Salvar em PDF</button><button type="button" id="b-excel">📊 Baixar para o Excel</button></div>
+    <div class="lista-bts"><button type="button" id="b-comp">📤 Compartilhar</button><button type="button" id="b-pdf">📄 Salvar em PDF</button><button type="button" id="b-excel">📊 Baixar para o Excel</button></div>
     <div class="lista-print-cab" id="lista-print-cab"><img src="img/logo-horizontal.png" alt=""><b id="lista-print-tit"></b></div>
     <div class="lista-rolar"><table id="tab"></table></div>
   </div>
@@ -142,6 +142,40 @@ document.getElementById("b-excel").addEventListener("click", () => {
   a.href = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8" }));
   a.download = ("Inscritas " + listaAtual.titulo).replace(/[\/:*?"<>|]/g, "-") + ".csv";
   document.body.appendChild(a); a.click(); a.remove();
+});
+// Compartilhar: monta um PDF de verdade (jsPDF, guardado no próprio site) e abre o "compartilhar" do celular (WhatsApp etc.)
+function carregarJs(src) { return new Promise((ok, erro) => { if (document.querySelector('script[src="' + src + '"]')) return ok(); const sc = document.createElement("script"); sc.src = src; sc.onload = ok; sc.onerror = erro; document.head.appendChild(sc); }); }
+async function pdfDaLista() {
+  await carregarJs("js/jspdf.umd.min.js"); await carregarJs("js/jspdf.plugin.autotable.min.js");
+  const doc = new window.jspdf.jsPDF({ orientation: "landscape", unit: "mm", format: "a4" });
+  try {
+    // logo diminuído, para o PDF ficar leve no WhatsApp
+    const img = await new Promise((ok, erro) => { const i = new Image(); i.onload = () => ok(i); i.onerror = erro; i.src = "img/logo-horizontal.png"; });
+    const c = document.createElement("canvas"); c.width = 480; c.height = Math.round(480 * img.height / img.width);
+    const g = c.getContext("2d"); g.fillStyle = "#fff"; g.fillRect(0, 0, c.width, c.height); g.drawImage(img, 0, 0, c.width, c.height);
+    doc.addImage(c.toDataURL("image/jpeg", 0.85), "JPEG", 118, 6, 60, 60 * c.height / c.width);
+  } catch (_) {}
+  doc.setFont("helvetica", "bold"); doc.setFontSize(12); doc.setTextColor(75, 63, 92);
+  doc.text("Inscritas · " + listaAtual.titulo + " · " + listaAtual.linhas.length + " inscritas", 148.5, 30, { align: "center" });
+  doc.autoTable({ startY: 34, head: [["Nº"].concat(listaAtual.cab)], body: listaAtual.linhas.map((l, i) => [i + 1].concat(l)),
+    styles: { fontSize: 8, cellPadding: 1.6, textColor: [75, 63, 92] }, headStyles: { fillColor: [168, 139, 201], textColor: 255 },
+    alternateRowStyles: { fillColor: [250, 247, 253] }, margin: { left: 10, right: 10 } });
+  return doc.output("blob");
+}
+document.getElementById("b-comp").addEventListener("click", async e => {
+  if (!listaAtual) return;
+  const b = e.currentTarget, txt = b.textContent; b.disabled = true; b.textContent = "Preparando...";
+  try {
+    const nome = ("Inscritas " + listaAtual.titulo).replace(/[\/:*?"<>|]/g, "-") + ".pdf";
+    const arq = new File([await pdfDaLista()], nome, { type: "application/pdf" });
+    if (navigator.canShare && navigator.canShare({ files: [arq] })) {
+      await navigator.share({ files: [arq], title: nome });
+    } else {
+      const a = document.createElement("a"); a.href = URL.createObjectURL(arq); a.download = nome; document.body.appendChild(a); a.click(); a.remove();
+      alert("O PDF foi baixado. Agora é só anexar no WhatsApp ou no e-mail. 🌸");
+    }
+  } catch (err) { if (err && err.name !== "AbortError") alert("Não consegui preparar o PDF agora. Tente de novo."); }
+  finally { b.disabled = false; b.textContent = txt; }
 });
 let senhaLista = ""; try { senhaLista = sessionStorage.getItem("cha-lista") || ""; } catch (_) {}
 document.getElementById("ver-lista").addEventListener("click", () => {
