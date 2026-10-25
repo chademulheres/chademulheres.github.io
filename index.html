@@ -493,6 +493,14 @@ h2,.convbox .convh,.eyebrow,.k,.ag-item .k,.ag-item svg,.ag-item a,.vids-title,.
 @media(max-width:700px){.aval-destaque{grid-template-columns:1fr;grid-template-areas:"st" "tit" "txt" "cit" "bt";text-align:center;justify-items:center;row-gap:4px}.ad-bt{margin-top:6px}}
 .side nav a.nav-destaque{background:linear-gradient(90deg,rgba(168,139,201,.18),rgba(227,166,200,.18))!important;color:#7A5FA0!important;font-weight:500}
 .nav-destaque em{margin-left:auto;font:normal 600 10px var(--f-sans);text-transform:uppercase;letter-spacing:.08em;color:#fff;background:linear-gradient(90deg,#A88BC9,#D7A6C4);border-radius:999px;padding:2px 8px}
+
+/* Paleta de cor do Chá: amostra grande com o nome embaixo */
+.cor-next{display:flex!important;flex-direction:column;align-items:center;gap:8px;margin:16px auto 0;padding:0!important;border:0!important;background:none!important}
+.cor-next[hidden]{display:none!important}
+.cor-next .cn-rot{font-family:var(--f-sans);font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--lilas-tit)}
+.cor-next i{display:block;width:150px!important;height:70px!important;border-radius:18px!important;border:4px solid #fff!important;box-shadow:0 0 0 1px var(--line),0 8px 20px rgba(80,40,80,.18)!important}
+.cor-next b{font-family:var(--f-serif);font-size:18px;color:var(--ink)}
+.cor1 i{width:110px!important;height:54px!important;border-radius:14px!important}
 </style>
 
 
@@ -577,7 +585,7 @@ h2,.convbox .convh,.eyebrow,.k,.ag-item .k,.ag-item svg,.ag-item a,.vids-title,.
       <div class="eyebrow">Próximo encontro</div>
       <p class="tema"><b data-cfg="tema">Mulheres Posicionadas</b></p>
       <div class="when" data-cfg="when">Sábado, 14 de novembro de 2026 · 19h30 · Ribeirão Preto</div>
-      <div class="cor-next" data-cor hidden><i></i><span>Cor do Chá: <b data-cfg="corNome"></b></span></div>
+      <div class="cor-next" data-cor hidden><span class="cn-rot">Paleta de cor do Chá</span><i></i><b data-cfg="corNome"></b></div>
     </div>
     <div class="noevent" id="noevent">
       <div class="eyebrow">Próximo encontro</div>
@@ -617,7 +625,7 @@ h2,.convbox .convh,.eyebrow,.k,.ag-item .k,.ag-item svg,.ag-item a,.vids-title,.
       </div>
       <div class="ag-item" data-cor hidden>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><circle cx="8.5" cy="10" r="1.3"/><circle cx="12" cy="7.5" r="1.3"/><circle cx="15.5" cy="10" r="1.3"/></svg>
-        <span class="k">Cor do Chá</span>
+        <span class="k">Paleta de cor do Chá</span>
         <span class="v cor1"><i></i><span><b data-cfg="corNome"></b><br><small>Venha vestida com a cor do nosso Chá! 💐</small></span></span>
       </div>
     </div>
@@ -959,8 +967,8 @@ function aplicarConfig(c){
     t=t.replace(/(📅 Data: ).*/,"$1"+d+" de "+MESES[m-1]+" de "+y);
     if(c.hora) t=t.replace(/(⏰ Horário: ).*/,"$1Às "+c.hora);
     if(c.local) t=t.replace(/(📍 Local: ).*/,"$1"+c.local);
-    t=t.replace(/\n👗 Cor do Chá: .*/,"");
-    if(c.corNome) t=t.replace(/(📍 Local: .*)/,"$1\n👗 Cor do Chá: "+c.corNome);
+    t=t.replace(/\n👗 (Paleta de )?[Cc]or do Chá: .*/,"");
+    if(c.corNome) t=t.replace(/(📍 Local: .*)/,"$1\n👗 Paleta de cor do Chá: "+c.corNome);
     wa.href="https://wa.me/?text="+encodeURIComponent(t);}
   tick();
 }
