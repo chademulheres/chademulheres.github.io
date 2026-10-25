@@ -479,6 +479,20 @@ h2,.convbox .convh,.eyebrow,.k,.ag-item .k,.ag-item svg,.ag-item a,.vids-title,.
 .aval-quem img{width:34px;height:34px;border-radius:50%}
 .aval-quem button{all:unset;cursor:pointer;color:var(--muted);text-decoration:underline;font-size:13px}
 .aval-av{width:26px;height:26px;border-radius:50%;vertical-align:middle;margin-right:8px}
+
+/* Destaque das avaliações na tela inicial e no menu */
+.aval-destaque{position:relative;z-index:2;display:grid;grid-template-columns:auto 1fr auto;grid-template-areas:"st tit bt" "st txt bt" "st cit bt";align-items:center;column-gap:22px;row-gap:2px;width:min(100%,900px);margin:6px auto 4px;padding:16px 22px;text-align:left;text-decoration:none;color:var(--ink);text-align:center;
+  border-radius:28px;background:linear-gradient(#fff,#fff) padding-box,linear-gradient(120deg,#A88BC9,#E3A6C8,#C9B3E6) border-box;border:2px solid transparent;box-shadow:0 18px 44px rgba(150,110,190,.22);transition:transform .2s,box-shadow .2s}
+.aval-destaque:hover{transform:translateY(-3px);box-shadow:0 24px 54px rgba(150,110,190,.3)}
+.ad-st{grid-area:st;font-size:26px;letter-spacing:4px;background:linear-gradient(90deg,#A88BC9,#E3A6C8);-webkit-background-clip:text;background-clip:text;color:transparent;animation:brilho 2.8s ease-in-out infinite}
+@keyframes brilho{0%,100%{filter:none}50%{filter:drop-shadow(0 0 8px rgba(200,150,220,.7))}}
+.ad-tit{grid-area:tit;font-family:var(--f-script);font-size:34px;line-height:1.05;color:var(--lilas-tit)}
+.ad-txt{grid-area:txt;font-family:var(--f-sans);font-size:14.5px;color:var(--muted)}
+.ad-cit{grid-area:cit;font-style:italic;font-size:14.5px;color:var(--ink)}
+.ad-bt{grid-area:bt;white-space:nowrap;font-family:var(--f-sans);font-weight:500;font-size:15px;color:#fff;padding:11px 24px;border-radius:999px;background:linear-gradient(90deg,#A88BC9,#D7A6C4);box-shadow:0 6px 18px rgba(120,90,160,.25)}
+@media(max-width:700px){.aval-destaque{grid-template-columns:1fr;grid-template-areas:"st" "tit" "txt" "cit" "bt";text-align:center;justify-items:center;row-gap:4px}.ad-bt{margin-top:6px}}
+.side nav a.nav-destaque{background:linear-gradient(90deg,rgba(168,139,201,.18),rgba(227,166,200,.18))!important;color:#7A5FA0!important;font-weight:500}
+.nav-destaque em{margin-left:auto;font:normal 600 10px var(--f-sans);text-transform:uppercase;letter-spacing:.08em;color:#fff;background:linear-gradient(90deg,#A88BC9,#D7A6C4);border-radius:999px;padding:2px 8px}
 </style>
 
 
@@ -496,7 +510,7 @@ h2,.convbox .convh,.eyebrow,.k,.ag-item .k,.ag-item svg,.ag-item a,.vids-title,.
     <a href="https://tinyurl.com/chademulheresrp" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4l10-10-4-4L4 16z"/><path d="M13 7l4 4"/></svg>Faça sua inscrição <span aria-hidden="true" style="margin-left:auto;opacity:.6">↗</span></a>
     <a class="avise-nav" href="https://tally.so/r/jeDYOx" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 8 3 8H3s3-1 3-8"/><path d="M10 20a2 2 0 0 0 4 0"/></svg>Avise-me dos próximos Chás <span aria-hidden="true" style="margin-left:auto;opacity:.6">↗</span></a>
     <a href="#convide" data-page="convide"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="2.5"/><circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="19" r="2.5"/><path d="M8.2 10.8l7.6-4.4M8.2 13.2l7.6 4.4"/></svg>Convide uma amiga</a>
-<a href="#avaliacoes" data-page="avaliacoes"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.9l-5.2 2.7 1-5.8-4.3-4.1 5.9-.9z"/></svg>Avaliações do Chá</a>
+<a href="#avaliacoes" data-page="avaliacoes" class="nav-destaque"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.9l-5.2 2.7 1-5.8-4.3-4.1 5.9-.9z"/></svg>Avaliações do Chá<em>novo</em></a>
 <a href="#igreja" data-page="igreja"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v5M9.5 4.5h5"/><path d="M5 21V11l7-4 7 4v10"/><path d="M10 21v-5h4v5"/></svg>Leve o Chá à sua igreja</a>
   </nav>
   <div class="cta">
@@ -523,6 +537,13 @@ h2,.convbox .convh,.eyebrow,.k,.ag-item .k,.ag-item svg,.ag-item a,.vids-title,.
 <div class="page" id="p-inicio"><section class="hero"><div class="floral2" aria-hidden="true"></div>
   <div class="in">
     <h1 class="logo"><picture><source media="(min-width:700px)" srcset="img/logo-horizontal.png"><img src="img/logo-horizontal.png" alt="Chá de Mulheres – Gerando Testemunho, Ribeirão Preto" width="900" height="745"></picture></h1>
+    <a class="aval-destaque" href="#avaliacoes" data-page="avaliacoes">
+      <span class="ad-st">★★★★★</span>
+      <span class="ad-tit">Avaliações do Chá</span>
+      <span class="ad-txt" id="ad-txt">Veja o que as mulheres dizem e deixe a sua avaliação!</span>
+      <span class="ad-cit" id="ad-cit" hidden></span>
+      <span class="ad-bt">Ver avaliações e avaliar ⭐</span>
+    </a>
     <section class="sobre" aria-label="Sobre o Chá de Mulheres">
       <div class="eyebrow">Sobre o Chá 🌷</div>
       <div class="txt">
@@ -565,6 +586,7 @@ h2,.convbox .convh,.eyebrow,.k,.ag-item .k,.ag-item svg,.ag-item a,.vids-title,.
       <a class="btn gold" href="https://tally.so/r/jeDYOx" target="_blank" rel="noopener">🔔 Quero ser avisada</a>
     </div>
 
+
     <div class="vids-title" id="vids-home-tit">Veja como foi o último Chá · 29/08</div>
     <div class="vids dark" id="vids-home">
       <figure><div class="vbox" style="--poster:url(vid/video1.jpg)"><video src="vid/video1.mp4" poster="vid/video1.jpg" controls playsinline autoplay muted preload="auto"></video></div><figcaption>Louvor e adoração</figcaption></figure>
@@ -601,7 +623,7 @@ h2,.convbox .convh,.eyebrow,.k,.ag-item .k,.ag-item svg,.ag-item a,.vids-title,.
     </div>
   </div>
 </section>
-<section class="pg aval-home" id="aval-home" hidden>
+<section class="pg aval-home" id="aval-home">
   <div class="in">
     <div class="eyebrow">Depoimentos</div>
     <h2>O que elas dizem</h2>
@@ -856,7 +878,11 @@ function renderAvaliacoes(c){
   const lista=document.getElementById("aval-lista"), media=document.getElementById("aval-media"), home=document.getElementById("aval-home");
   if(lista) lista.innerHTML=L.length?L.map(cartaoAval).join(""):'<p class="aval-vazio">Ainda não há avaliações. Seja a primeira! 🌸</p>';
   if(media){media.hidden=!L.length; if(L.length){const m=L.reduce((t,a)=>t+a.nota,0)/L.length; media.innerHTML='<span class="aval-st grande">'+estrelas(Math.round(m))+'</span> <b>'+m.toFixed(1).replace(".",",")+'</b> de 5 · '+L.length+(L.length===1?' avaliação':' avaliações');}}
-  if(home){home.hidden=!L.length; document.getElementById("aval-home-lista").innerHTML=L.slice(0,3).map(cartaoAval).join("");}
+  if(home){home.hidden=false; document.getElementById("aval-home-lista").innerHTML=L.length?L.slice(0,3).map(cartaoAval).join(""):'<p class="aval-vazio">Seja a primeira a contar como foi o Chá para você! 🌸</p>';}
+  const adt=document.getElementById("ad-txt"), adc=document.getElementById("ad-cit");
+  if(adt&&L.length){const m=L.reduce((t,a)=>t+a.nota,0)/L.length;
+    adt.textContent="Nota "+m.toFixed(1).replace(".",",")+" de 5 · "+L.length+(L.length===1?" avaliação":" avaliações");
+    const a=L[0]; adc.hidden=false; adc.textContent="“"+(a.texto.length>110?a.texto.slice(0,107)+"…":a.texto)+"” — "+(a.nome||"Anônima");}
 }
 (function(){
   let nota=0;
