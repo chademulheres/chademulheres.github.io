@@ -471,6 +471,14 @@ h2,.convbox .convh,.eyebrow,.k,.ag-item .k,.ag-item svg,.ag-item a,.vids-title,.
 .insta-play{position:absolute;right:10px;top:10px;width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,.85);color:#9474B8;display:grid;place-items:center;font-size:12px}
 .insta-home .btn{margin-top:26px}
 @media(max-width:520px){.insta-grid{gap:6px}.insta-item{border-radius:10px}}
+
+#aval-nome-box{display:flex;flex-direction:column;gap:6px}#aval-nome-box[hidden]{display:none}
+.aval-login{text-align:center;margin:6px 0}.aval-login p{margin:0 0 8px;font-family:var(--f-sans);font-size:14px;color:var(--muted)}
+#aval-gbtn{display:flex;justify-content:center}
+.aval-quem{display:flex;align-items:center;justify-content:center;gap:10px;font-family:var(--f-sans);font-size:14px;color:var(--ink);margin:6px 0}
+.aval-quem img{width:34px;height:34px;border-radius:50%}
+.aval-quem button{all:unset;cursor:pointer;color:var(--muted);text-decoration:underline;font-size:13px}
+.aval-av{width:26px;height:26px;border-radius:50%;vertical-align:middle;margin-right:8px}
 </style>
 
 
@@ -651,10 +659,15 @@ h2,.convbox .convh,.eyebrow,.k,.ag-item .k,.ag-item svg,.ag-item a,.vids-title,.
       <div class="aval-estrelas" id="aval-estrelas" role="radiogroup" aria-label="Nota">
         <button type="button" data-n="1" aria-label="1 estrela">★</button><button type="button" data-n="2" aria-label="2 estrelas">★</button><button type="button" data-n="3" aria-label="3 estrelas">★</button><button type="button" data-n="4" aria-label="4 estrelas">★</button><button type="button" data-n="5" aria-label="5 estrelas">★</button>
       </div>
-      <label for="aval-nome">Seu nome <small>(pode deixar em branco)</small></label>
-      <input id="aval-nome" type="text" maxlength="60" placeholder="Ex.: Maria">
-      <label for="aval-cha">Qual Chá?</label>
-      <select id="aval-cha"><option value="">Escolha o Chá</option></select>
+      <div class="aval-login" id="aval-login" hidden>
+        <p>Entre com sua conta Google para comentar:</p>
+        <div id="aval-gbtn"></div>
+      </div>
+      <div class="aval-quem" id="aval-quem" hidden><img id="aval-foto" alt=""><span>Comentando como <b id="aval-nomeg"></b></span><button type="button" id="aval-sair">Sair</button></div>
+      <div id="aval-nome-box">
+        <label for="aval-nome">Seu nome <small>(pode deixar em branco)</small></label>
+        <input id="aval-nome" type="text" maxlength="60" placeholder="Ex.: Maria">
+      </div>
       <label for="aval-texto">Seu comentário</label>
       <textarea id="aval-texto" maxlength="600" rows="4" placeholder="Como foi o Chá para você?"></textarea>
       <button class="btn" type="submit">Enviar avaliação</button>
@@ -838,17 +851,14 @@ function eventoGoogle(c){
 }
 /* Avaliações: só as aprovadas pela administração aparecem */
 function estrelas(n){return "★★★★★".slice(0,n)+"☆☆☆☆☆".slice(0,5-n);}
-function cartaoAval(a){return '<figure class="aval-card"><div class="aval-st" aria-label="'+a.nota+' de 5 estrelas">'+estrelas(a.nota)+'</div><blockquote>'+esc(a.texto)+'</blockquote><figcaption><b>'+esc(a.nome||"Anônima")+'</b>'+(a.cha?' · '+esc(a.cha):'')+'</figcaption></figure>';}
+function cartaoAval(a){const foto=/^https:\/\/[\w.-]+\.googleusercontent\.com\//.test(a.foto||"")?'<img class="aval-av" src="'+esc(a.foto)+'" alt="" referrerpolicy="no-referrer" loading="lazy">':'';
+  return '<figure class="aval-card"><div class="aval-st" aria-label="'+a.nota+' de 5 estrelas">'+estrelas(a.nota)+'</div><blockquote>'+esc(a.texto)+'</blockquote><figcaption>'+foto+'<b>'+esc(a.nome||"Anônima")+'</b></figcaption></figure>';}
 function renderAvaliacoes(c){
   const L=Array.isArray(c.avaliacoes)?c.avaliacoes:[];
   const lista=document.getElementById("aval-lista"), media=document.getElementById("aval-media"), home=document.getElementById("aval-home");
   if(lista) lista.innerHTML=L.length?L.map(cartaoAval).join(""):'<p class="aval-vazio">Ainda não há avaliações. Seja a primeira! 🌸</p>';
   if(media){media.hidden=!L.length; if(L.length){const m=L.reduce((t,a)=>t+a.nota,0)/L.length; media.innerHTML='<span class="aval-st grande">'+estrelas(Math.round(m))+'</span> <b>'+m.toFixed(1).replace(".",",")+'</b> de 5 · '+L.length+(L.length===1?' avaliação':' avaliações');}}
   if(home){home.hidden=!L.length; document.getElementById("aval-home-lista").innerHTML=L.slice(0,3).map(cartaoAval).join("");}
-  const sel=document.getElementById("aval-cha");
-  if(sel&&Array.isArray(c.galeria)){const atual=sel.value; const hoje=new Date().toISOString().slice(0,10);
-    sel.innerHTML='<option value="">Escolha o Chá</option>'+c.galeria.filter(e=>e.data<=hoje).map(e=>{const t=dataBarras(e.data)+(e.tema?" – "+e.tema:"");return '<option>'+esc(t)+'</option>';}).join("")+'<option>Outro</option>';
-    sel.value=atual;}
 }
 (function(){
   let nota=0;
@@ -856,16 +866,32 @@ function renderAvaliacoes(c){
   const pinta=n=>bts.forEach(b=>b.classList.toggle("on",Number(b.dataset.n)<=n));
   bts.forEach(b=>{b.addEventListener("click",()=>{nota=Number(b.dataset.n);pinta(nota);});b.addEventListener("mouseenter",()=>pinta(Number(b.dataset.n)));b.addEventListener("mouseleave",()=>pinta(nota));});
   const f=document.getElementById("aval-form"); if(!f) return;
+  // "Entrar com Google": o nome e a foto vêm da conta da pessoa; o Google confirma quem é
+  let credencial="";
+  const cid=window.CHA_GOOGLE_CLIENT_ID||"";
+  const decod=t=>{try{return JSON.parse(decodeURIComponent(escape(atob(t.split(".")[1].replace(/-/g,"+").replace(/_/g,"/")))));}catch(_){return {};}};
+  const mostrarQuem=()=>{const d=credencial?decod(credencial):null;
+    document.getElementById("aval-quem").hidden=!d; document.getElementById("aval-login").hidden=!!d||!cid; document.getElementById("aval-nome-box").hidden=!!cid;
+    if(d){document.getElementById("aval-nomeg").textContent=d.given_name||d.name||"";const im=document.getElementById("aval-foto");im.src=d.picture||"";im.hidden=!d.picture;}};
+  if(cid){
+    const sc=document.createElement("script"); sc.src="https://accounts.google.com/gsi/client"; sc.async=true;
+    sc.onload=()=>{google.accounts.id.initialize({client_id:cid,callback:r=>{credencial=r.credential;mostrarQuem();},auto_select:false});
+      google.accounts.id.renderButton(document.getElementById("aval-gbtn"),{theme:"outline",size:"large",shape:"pill",text:"signin_with",locale:"pt-BR"});};
+    document.head.appendChild(sc);
+    document.getElementById("aval-sair").addEventListener("click",()=>{credencial="";try{google.accounts.id.disableAutoSelect();}catch(_){}mostrarQuem();});
+  }
+  mostrarQuem();
   f.addEventListener("submit",async e=>{e.preventDefault();
     const m=document.getElementById("aval-msg"), bt=f.querySelector('button[type=submit]'), txt=document.getElementById("aval-texto").value.trim();
     const aviso=(t,ok)=>{m.hidden=false;m.textContent=t;m.className="aval-msg "+(ok?"ok":"erro");};
     if(!nota) return aviso("Toque nas estrelas para dar sua nota.",false);
     if(txt.length<3) return aviso("Escreva um comentário.",false);
+    if(cid&&!credencial) return aviso("Entre com sua conta Google para enviar.",false);
     if(!window.CHA_CONFIG_URL) return aviso("Não foi possível enviar agora.",false);
     bt.disabled=true; bt.textContent="Enviando...";
-    try{const r=await (await fetch(window.CHA_CONFIG_URL,{method:"POST",body:JSON.stringify({acao:"avaliar",nota,texto:txt,nome:document.getElementById("aval-nome").value,cha:document.getElementById("aval-cha").value})})).json();
+    try{const r=await (await fetch(window.CHA_CONFIG_URL,{method:"POST",body:JSON.stringify({acao:"avaliar",nota,texto:txt,nome:document.getElementById("aval-nome").value,credencial})})).json();
       if(!r.ok) throw new Error(r.erro||"");
-      f.reset(); nota=0; pinta(0); aviso("Obrigada! 💜 Seu comentário foi enviado e aparece aqui depois que as organizadoras aprovarem.",true);
+      document.getElementById("aval-texto").value=""; nota=0; pinta(0); aviso("Obrigada! 💜 Seu comentário foi enviado e aparece aqui depois que as organizadoras aprovarem.",true);
     }catch(err){aviso("Não deu certo agora. "+(err.message||"Tente de novo em alguns minutos."),false);}
     finally{bt.disabled=false; bt.textContent="Enviar avaliação";}
   });

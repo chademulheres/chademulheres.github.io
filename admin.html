@@ -730,7 +730,7 @@ function listaAvaliacoes(L) {
     d.querySelector(".av-st").textContent = "★★★★★".slice(0, a.nota) + "☆☆☆☆☆".slice(0, 5 - a.nota);
     d.querySelector("em").textContent = a.situacao === "pendente" ? "Esperando aprovação" : a.situacao === "aprovada" ? "Aparecendo no site" : "Escondida";
     d.querySelector(".av-txt").textContent = a.texto;
-    d.querySelector("small").textContent = (a.nome || "Anônima") + (a.cha ? " · " + a.cha : "") + " · " + a.quando;
+    d.querySelector("small").textContent = (a.nome || "Anônima") + (a.email ? " (" + a.email + ")" : "") + (a.cha ? " · " + a.cha : "") + " · " + a.quando;
     const bts = d.querySelector(".av-bts");
     const bt = (txt, cls, acao, conf) => { const b = document.createElement("button"); b.type = "button"; b.className = cls; b.textContent = txt;
       b.addEventListener("click", async () => { if (conf && !confirm(conf)) return; b.disabled = true;
