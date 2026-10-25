@@ -935,6 +935,31 @@ function renderInsta(c){
   box.hidden=!L.length; if(!L.length) return;
   document.getElementById("insta-grid").innerHTML=L.slice(0,6).map(x=>'<a class="insta-item" href="'+esc(x.link)+'" target="_blank" rel="noopener" title="'+esc(x.legenda)+'"><img src="'+esc(x.img)+'" alt="'+esc(x.legenda||"Post do Instagram do Chá")+'" loading="lazy">'+(x.video?'<span class="insta-play" aria-hidden="true">▶</span>':'')+'</a>').join("");
 }
+/* Se a administração não mandou o nome da cor, descobre pelo código (ex.: #7A4554 = Marsala) */
+const NOMES_COR = {
+  "marsala":"#7A4554","vinho":"#6B1E2E","bordo":"#6D1A2A","bordô":"#6D1A2A","borgonha":"#6D1A2A","cereja":"#8B1E3F",
+  "rosa":"#C25A7C","rosa antigo":"#9C5A73","rose":"#B7787F","rosé":"#B7787F","rosa seco":"#A8737A","rosa queimado":"#A5636B",
+  "rosa chá":"#C9967F","rosa cha":"#C9967F","pink":"#C2185B","fucsia":"#B0236B","fúcsia":"#B0236B","magenta":"#A3266F",
+  "lilás":"#6E4E7E","lilas":"#6E4E7E","lavanda":"#7B6A9B","roxo":"#5B3A72","violeta":"#6A3D8A","uva":"#5A2D5C","ameixa":"#5E2B4C",
+  "azul":"#3E5C76","azul marinho":"#22344F","azul-marinho":"#22344F","marinho":"#22344F","azul royal":"#2A4B8C","azul bebê":"#6E93B5","azul bebe":"#6E93B5",
+  "azul serenity":"#6F8FB8","serenity":"#6F8FB8","azul petróleo":"#1F5560","azul petroleo":"#1F5560","petróleo":"#1F5560","petroleo":"#1F5560","turquesa":"#2A8C8C","tiffany":"#3E9C96",
+  "verde":"#4F6B58","verde oliva":"#5F6B3A","verde-oliva":"#5F6B3A","oliva":"#5F6B3A","verde musgo":"#4A5A3A","musgo":"#4A5A3A","verde água":"#4E9C8F","verde agua":"#4E9C8F",
+  "verde sálvia":"#7A8F78","verde salvia":"#7A8F78","sálvia":"#7A8F78","salvia":"#7A8F78","verde esmeralda":"#1F6B4F","esmeralda":"#1F6B4F","verde bandeira":"#1E6B3A",
+  "terracota":"#8A5A3C","marrom":"#5C3B2E","chocolate":"#4E2E25","café":"#5A3E33","cafe":"#5A3E33","caramelo":"#9A6332","cobre":"#9A5B3A","ferrugem":"#8B4A2B",
+  "nude":"#B08C7A","bege":"#A89078","areia":"#A8906E","champagne":"#B59A72","champanhe":"#B59A72","dourado":"#A8823F","ouro":"#A8823F","mostarda":"#A88A2A",
+  "coral":"#C2614F","salmão":"#C2705C","salmao":"#C2705C","pêssego":"#C98A6E","pessego":"#C98A6E","laranja":"#C0662E","amarelo":"#B8962E",
+  "vermelho":"#A3262E","cinza":"#5E5E66","grafite":"#3E3E44","chumbo":"#4A4A50","preto":"#2B2326","prata":"#8C8C94"
+};
+function nomeDaCor(hex){
+  if(!hex) return "";
+  const h=String(hex).toUpperCase();
+  const k=Object.keys(NOMES_COR).find(n=>NOMES_COR[n].toUpperCase()===h&&/^[a-zà-ú ]+$/.test(n));
+  if(k) return k.charAt(0).toUpperCase()+k.slice(1);
+  // cor parecida mais próxima
+  const rgb=x=>[1,3,5].map(i=>parseInt(x.slice(i,i+2),16)); const a=rgb(h);
+  let melhor="",dist=1e9; Object.keys(NOMES_COR).forEach(n=>{const b=rgb(NOMES_COR[n].toUpperCase());const d=(a[0]-b[0])**2+(a[1]-b[1])**2+(a[2]-b[2])**2;if(d<dist){dist=d;melhor=n;}});
+  return melhor?melhor.charAt(0).toUpperCase()+melhor.slice(1):"";
+}
 function aplicarConfig(c){
   if(!c) return;
   try{renderInsta(c);}catch(_){}
@@ -945,7 +970,7 @@ function aplicarConfig(c){
   // a cor escolhida na administração é a "Cor do Chá" (a roupa); o site fica sempre no tema lavanda
   const temCor=c.cor&&/^#[0-9a-f]{6}$/i.test(c.cor);
   document.querySelectorAll("[data-cor]").forEach(e=>{e.hidden=!temCor;const i=e.querySelector("i");if(i&&temCor)i.style.background=c.cor;});
-  set("corNome",c.corNome||"");
+  set("corNome",c.corNome||nomeDaCor(c.cor));
   if(c.tema){set("tema",c.tema);}
   if(c.local){set("local",c.local);document.querySelectorAll('[data-cfg="mapa"]').forEach(a=>{a.href="https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(c.local)});}
   if(c.hora) set("horaTxt","Às "+c.hora);
@@ -968,7 +993,7 @@ function aplicarConfig(c){
     if(c.hora) t=t.replace(/(⏰ Horário: ).*/,"$1Às "+c.hora);
     if(c.local) t=t.replace(/(📍 Local: ).*/,"$1"+c.local);
     t=t.replace(/\n👗 (Paleta de )?[Cc]or do Chá: .*/,"");
-    if(c.corNome) t=t.replace(/(📍 Local: .*)/,"$1\n👗 Paleta de cor do Chá: "+c.corNome);
+    {const cn=c.corNome||nomeDaCor(c.cor); if(cn) t=t.replace(/(📍 Local: .*)/,"$1\n👗 Paleta de cor do Chá: "+cn);}
     wa.href="https://wa.me/?text="+encodeURIComponent(t);}
   tick();
 }
