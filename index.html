@@ -681,7 +681,7 @@ h2,.convbox .convh,.eyebrow,.k,.ag-item .k,.ag-item svg,.ag-item a,.vids-title,.
     <a class="back" href="#inicio" data-page="inicio"><span aria-hidden="true">←</span> Voltar ao início</a>
     <div class="eyebrow">Depoimentos</div>
     <h2>O que elas dizem</h2>
-    <p>Esteve em algum Chá? Conte como foi para você. Para avaliar, é preciso entrar com a sua conta Google. O comentário aparece aqui depois que as organizadoras aprovarem. 💜</p>
+    <p>Esteve em algum Chá? Conte como foi para você! 💜</p>
     <div class="aval-media" id="aval-media" hidden></div>
     <div class="aval-lista" id="aval-lista"></div>
     <form class="aval-form" id="aval-form">
@@ -924,7 +924,8 @@ function renderAvaliacoes(c){
     bt.disabled=true; bt.textContent="Enviando...";
     try{const r=await (await fetch(window.CHA_CONFIG_URL,{method:"POST",body:JSON.stringify({acao:"avaliar",nota,texto:txt,credencial})})).json();
       if(!r.ok) throw new Error(r.erro||"");
-      document.getElementById("aval-texto").value=""; nota=0; pinta(0); aviso("Obrigada! 💜 Seu comentário foi enviado e aparece aqui depois que as organizadoras aprovarem.",true);
+      document.getElementById("aval-texto").value=""; nota=0; pinta(0); aviso("Obrigada! 💜 Sua avaliação já está no site.",true);
+      fetch(window.CHA_CONFIG_URL,{cache:"no-store"}).then(x=>x.json()).then(c=>{aplicarConfig(c);try{localStorage.setItem("cha-config",JSON.stringify(c));}catch(_){}}).catch(()=>{});
     }catch(err){aviso("Não deu certo agora. "+(err.message||"Tente de novo em alguns minutos."),false);}
     finally{bt.disabled=false; bt.textContent="Enviar avaliação";}
   });
