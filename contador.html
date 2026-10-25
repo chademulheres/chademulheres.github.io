@@ -70,6 +70,10 @@ a{color:#9474B8}
   .lista td{padding:2.5px 5px}
   .lista tr{break-inside:avoid}
 }
+
+.acoes-lista{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
+.ver-lista.principal{font-size:16px;padding:14px 28px;box-shadow:0 8px 22px rgba(120,90,160,.28)}
+#ver-lista{background:#fff!important;color:#7A5FA0!important;border:1.5px solid #A88BC9!important}
 </style>
 </head>
 <body>
@@ -82,7 +86,8 @@ a{color:#9474B8}
   <div class="faltam" id="faltam" hidden></div>
 </div>
 <div class="at" id="at">Atualizando...</div>
-<button class="ver-lista" id="ver-lista" type="button">📋 Ver a lista das inscritas</button>
+<div class="acoes-lista"><button class="ver-lista principal" id="comp-rapido" type="button">📤 Compartilhar a lista</button><button class="ver-lista" id="ver-lista" type="button">📋 Ver a lista</button></div>
+<button class="ver-lista principal" id="enviar-agora" type="button" hidden>📤 Pronto! Toque aqui para enviar</button>
 <div class="lista" id="lista" hidden>
   <form id="f-lista" class="lista-senha">
     <label for="lista-senha">Senha da lista</label>
@@ -162,32 +167,51 @@ async function pdfDaLista() {
     alternateRowStyles: { fillColor: [250, 247, 253] }, margin: { left: 10, right: 10 } });
   return doc.output("blob");
 }
-document.getElementById("b-comp").addEventListener("click", async e => {
-  if (!listaAtual) return;
-  const b = e.currentTarget, txt = b.textContent; b.disabled = true; b.textContent = "Preparando...";
+function nomeArquivo() { return ("Inscritas " + listaAtual.titulo).replace(/[\/:*?"<>|]/g, "-") + ".pdf"; }
+let arquivoPronto = null, querCompartilhar = false;
+async function prepararArquivo() { arquivoPronto = new File([await pdfDaLista()], nomeArquivo(), { type: "application/pdf" }); return arquivoPronto; }
+// abre o "compartilhar" do celular; se o celular pedir um novo toque, mostra o botão "Pronto! Toque aqui para enviar"
+async function enviarArquivo(arq) {
+  const ag = document.getElementById("enviar-agora");
   try {
-    const nome = ("Inscritas " + listaAtual.titulo).replace(/[\/:*?"<>|]/g, "-") + ".pdf";
-    const arq = new File([await pdfDaLista()], nome, { type: "application/pdf" });
-    if (navigator.canShare && navigator.canShare({ files: [arq] })) {
-      await navigator.share({ files: [arq], title: nome });
-    } else {
-      const a = document.createElement("a"); a.href = URL.createObjectURL(arq); a.download = nome; document.body.appendChild(a); a.click(); a.remove();
-      alert("O PDF foi baixado. Agora é só anexar no WhatsApp ou no e-mail. 🌸");
-    }
-  } catch (err) { if (err && err.name !== "AbortError") alert("Não consegui preparar o PDF agora. Tente de novo."); }
+    if (navigator.canShare && navigator.canShare({ files: [arq] })) { await navigator.share({ files: [arq], title: arq.name }); ag.hidden = true; return; }
+    const a = document.createElement("a"); a.href = URL.createObjectURL(arq); a.download = arq.name; document.body.appendChild(a); a.click(); a.remove();
+    ag.hidden = true; alert("O PDF foi baixado. Agora é só anexar no WhatsApp ou no e-mail. 🌸");
+  } catch (err) {
+    if (err && err.name === "NotAllowedError") { ag.hidden = false; ag.scrollIntoView({ behavior: "smooth", block: "center" }); }
+    else if (err && err.name !== "AbortError") alert("Não consegui compartilhar agora. Tente de novo.");
+  }
+}
+document.getElementById("enviar-agora").addEventListener("click", () => { if (arquivoPronto) enviarArquivo(arquivoPronto); });
+async function compartilharLista(b) {
+  const txt = b.textContent; b.disabled = true; b.textContent = "Preparando...";
+  try {
+    if (!listaAtual && !(await carregarLista())) return;
+    await enviarArquivo(await prepararArquivo());
+  } catch (_) { alert("Não consegui preparar o PDF agora. Tente de novo."); }
   finally { b.disabled = false; b.textContent = txt; }
+}
+document.getElementById("b-comp").addEventListener("click", e => { if (listaAtual) compartilharLista(e.currentTarget); });
+document.getElementById("comp-rapido").addEventListener("click", e => {
+  if (senhaLista || listaAtual) return compartilharLista(e.currentTarget);
+  // ainda não digitou a senha: pede a senha e compartilha logo depois
+  querCompartilhar = true;
+  document.getElementById("lista").hidden = false; document.getElementById("lista-senha").focus();
 });
+// deixa a ferramenta de PDF carregada para o compartilhar ser rápido
+setTimeout(() => { carregarJs("js/jspdf.umd.min.js").then(() => carregarJs("js/jspdf.plugin.autotable.min.js")).catch(() => {}); }, 1500);
 let senhaLista = ""; try { senhaLista = sessionStorage.getItem("cha-lista") || ""; } catch (_) {}
 document.getElementById("ver-lista").addEventListener("click", () => {
   const l = document.getElementById("lista"); l.hidden = !l.hidden;
   if (!l.hidden && senhaLista) carregarLista(); else if (!l.hidden) document.getElementById("lista-senha").focus();
 });
-document.getElementById("f-lista").addEventListener("submit", e => { e.preventDefault(); senhaLista = document.getElementById("lista-senha").value; carregarLista(); });
+document.getElementById("f-lista").addEventListener("submit", async e => { e.preventDefault(); senhaLista = document.getElementById("lista-senha").value;
+  if (await carregarLista() && querCompartilhar) { querCompartilhar = false; compartilharLista(document.getElementById("comp-rapido")); } });
 async function carregarLista() {
   const erro = document.getElementById("lista-erro"); erro.hidden = true;
   try {
     const r = await (await fetch(window.CHA_CONFIG_URL, { method: "POST", body: JSON.stringify({ acao: "lista_contador", senha: senhaLista }) })).json();
-    if (!r.ok) { erro.textContent = r.erro; erro.hidden = false; senhaLista = ""; try { sessionStorage.removeItem("cha-lista"); } catch (_) {} return; }
+    if (!r.ok) { erro.textContent = r.erro; erro.hidden = false; senhaLista = ""; try { sessionStorage.removeItem("cha-lista"); } catch (_) {} document.getElementById("lista").hidden = false; document.getElementById("f-lista").hidden = false; return false; }
     try { sessionStorage.setItem("cha-lista", senhaLista); } catch (_) {}
     const L = r.lista, t = document.getElementById("tab");
     listaAtual = L;
@@ -197,7 +221,8 @@ async function carregarLista() {
     const tr0 = document.createElement("tr"); ["Nº"].concat(L.cab).forEach(c => { const th = document.createElement("th"); th.textContent = c; tr0.appendChild(th); });
     t.appendChild(tr0);
     L.linhas.forEach((l, i) => { const tr = document.createElement("tr"); [String(i + 1)].concat(l).forEach(c => { const td = document.createElement("td"); td.textContent = c; tr.appendChild(td); }); t.appendChild(tr); });
-  } catch (e) { erro.textContent = "Sem conexão agora. Tente de novo."; erro.hidden = false; }
+    return true;
+  } catch (e) { erro.textContent = "Sem conexão agora. Tente de novo."; erro.hidden = false; document.getElementById("lista").hidden = false; return false; }
 }
 </script>
 </body>
