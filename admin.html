@@ -156,6 +156,20 @@ textarea{min-height:70px;resize:vertical}
   .ins-folha td{padding:2.5px 5px}
   .ins-folha thead{display:table-header-group}
 }
+.avals{display:grid;gap:14px;grid-template-columns:repeat(auto-fill,minmax(300px,1fr))}
+.aval{background:#fff;border:1px solid var(--line);border-radius:18px;padding:16px 18px;display:flex;flex-direction:column;gap:6px}
+.aval.pendente{border:1.5px solid #C9A0D6;box-shadow:0 0 0 4px rgba(201,160,214,.15)}
+.aval.oculta{opacity:.6}
+.av-top{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.av-st{color:#B98ED0;letter-spacing:2px}
+.av-top em{font:normal 11px Poppins,system-ui,sans-serif;background:#F3EEF9;color:#7A5FA0;border-radius:999px;padding:3px 10px}
+.aval.pendente .av-top em{background:#A88BC9;color:#fff}
+.av-txt{margin:0;font-style:italic;color:var(--cream)}
+.aval small{font:12px Poppins,system-ui,sans-serif;color:var(--muted)}
+.av-bts{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
+.av-bts button{font:500 13px Poppins,system-ui,sans-serif;border-radius:999px;padding:8px 14px;cursor:pointer;border:1.5px solid #A88BC9;background:#fff;color:#7A5FA0}
+.av-bts button.ok{background:linear-gradient(90deg,#A88BC9,#D7A6C4);color:#fff;border:0}
+.av-bts button.x{border-color:var(--erro);color:var(--erro)}
 .dois{display:grid;gap:0 16px}
 .dois.botoes{gap:0 12px}
 @media(min-width:600px){
@@ -243,6 +257,7 @@ input::placeholder,textarea::placeholder{color:rgba(75,63,92,.4)!important}
       <a href="#mensagens" data-aba="mensagens"><i>💬</i> Mensagens <span class="bolinha" id="n-pedidos" hidden></span></a>
       <a href="#galeria" data-aba="galeria"><i>📷</i> Galeria</a>
       <a href="#inscritas" data-aba="inscritas"><i>📋</i> Inscritas</a>
+      <a href="#avaliacoes" data-aba="avaliacoes"><i>⭐</i> Avaliações <span class="bolinha" id="n-aval" hidden></span></a>
       <a href="#links" data-aba="links"><i>🔗</i> Links</a>
       <span class="sep"></span>
       <a href="./" target="_blank" rel="noopener" class="fraco">Ver o site →</a>
@@ -383,6 +398,14 @@ input::placeholder,textarea::placeholder{color:rgba(75,63,92,.4)!important}
       </div>
     </section>
 
+    <!-- Avaliações deixadas no site -->
+    <section class="box" data-aba="avaliacoes">
+      <h2>Avaliações</h2>
+      <p class="sub">Comentários que as mulheres deixaram no site. Só aparecem no site depois que você clicar em <b>Aprovar</b>.</p>
+      <div class="avals" id="avals"></div>
+      <div class="msg" id="m-aval"></div>
+    </section>
+
     <!-- Links para copiar e mandar -->
     <section class="box" data-aba="links">
       <h2>Links</h2>
@@ -431,6 +454,7 @@ function preencher(p) {
   listaNomes("aviso", p.avisoNomes); listaNomes("lembrete", p.lembreteNomes);
   listaPedidos(p.pedidosSair || []);
   montarLinks(p.planilha);
+  listaAvaliacoes(p.avaliacoes || []);
   custoMsg = p.custoMsg || custoMsg;
   proximoCha = { data: c.data || "", tema: c.tema || "" };
   if (Array.isArray(c.galeria)) { galeria = c.galeria; if (!editando) listaGaleria(); }
@@ -678,6 +702,30 @@ $("ins-pdf").addEventListener("click", () => {
   const t = document.title; document.title = $("ins-tit").textContent.replace(/[\/:]/g, "-");
   window.print(); setTimeout(() => document.title = t, 1000);
 });
+function listaAvaliacoes(L) {
+  const el = $("avals"); el.innerHTML = "";
+  const pend = L.filter(a => a.situacao === "pendente").length;
+  $("n-aval").hidden = !pend; $("n-aval").textContent = pend;
+  if (!L.length) { el.innerHTML = '<p class="sub">Ainda ninguém deixou avaliação. 🌸</p>'; return; }
+  const ordem = { pendente: 0, aprovada: 1, oculta: 2 };
+  L.slice().sort((a, b) => (ordem[a.situacao] ?? 3) - (ordem[b.situacao] ?? 3)).forEach(a => {
+    const d = document.createElement("div"); d.className = "aval " + a.situacao;
+    d.innerHTML = '<div class="av-top"><span class="av-st"></span><em></em></div><p class="av-txt"></p><small></small><div class="av-bts"></div>';
+    d.querySelector(".av-st").textContent = "★★★★★".slice(0, a.nota) + "☆☆☆☆☆".slice(0, 5 - a.nota);
+    d.querySelector("em").textContent = a.situacao === "pendente" ? "Esperando aprovação" : a.situacao === "aprovada" ? "Aparecendo no site" : "Escondida";
+    d.querySelector(".av-txt").textContent = a.texto;
+    d.querySelector("small").textContent = (a.nome || "Anônima") + (a.cha ? " · " + a.cha : "") + " · " + a.quando;
+    const bts = d.querySelector(".av-bts");
+    const bt = (txt, cls, acao, conf) => { const b = document.createElement("button"); b.type = "button"; b.className = cls; b.textContent = txt;
+      b.addEventListener("click", async () => { if (conf && !confirm(conf)) return; b.disabled = true;
+        try { const r = await pedir({ acao, id: a.id }); if (r.ok) preencher(r.painel); else msg("m-aval", r.erro, false); } catch (e) { msg("m-aval", "Não consegui falar com a planilha. " + e.message, false); } });
+      bts.appendChild(b); };
+    if (a.situacao !== "aprovada") bt("✓ Aprovar", "ok", "aval_aprovar");
+    if (a.situacao === "aprovada") bt("Esconder do site", "", "aval_ocultar");
+    bt("Apagar", "x", "aval_apagar", "Apagar esta avaliação para sempre?");
+    el.appendChild(d);
+  });
+}
 function listaPedidos(lista) {
   const ul = $("pedidos"); ul.innerHTML = "";
   $("n-pedidos").hidden = !lista.length; $("n-pedidos").textContent = lista.length;
@@ -717,7 +765,7 @@ $("b-sair").addEventListener("click", () => {
 // abas: cada parte da administração numa página (o botão voltar do navegador também funciona)
 function mostrarAba() {
   const h = location.hash.slice(1);
-  let aba = ["cha", "mensagens", "galeria", "inscritas", "links"].includes(h) ? h : "cha";
+  let aba = ["cha", "mensagens", "galeria", "inscritas", "avaliacoes", "links"].includes(h) ? h : "cha";
   if (aba === "inscritas" && !insCarregada) carregarInscritas();
   if (h === "nomes-aviso" || h === "nomes-lembrete") { aba = "nomes"; abrirNomes(h.slice(6)); }
   document.querySelectorAll("section[data-aba]").forEach(s => s.hidden = s.dataset.aba !== aba);

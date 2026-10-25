@@ -37,6 +37,20 @@ body{background:linear-gradient(180deg,#F7F2FB 0%,#FBF8FD 45%,#F3EEF9 100%)!impo
 input{background:#fff!important;color:#4B3F5C!important}
 button{background:linear-gradient(90deg,#A88BC9,#D7A6C4)!important;color:#fff!important}
 a{color:#9474B8}
+
+.ver-lista{margin-top:4px;font:500 15px Poppins,system-ui,sans-serif;border:0;border-radius:999px;padding:12px 24px;cursor:pointer}
+.lista{width:min(100%,1000px);background:rgba(255,255,255,.72);border:1px solid rgba(180,160,210,.35);border-radius:22px;padding:20px;text-align:left}
+.lista-senha label{display:block;font:500 13px Poppins,system-ui,sans-serif;color:#9474B8;margin-bottom:6px}
+.lista-senha div{display:flex;gap:8px}
+.lista-senha input{flex:1;min-width:0;font:inherit;padding:11px 14px;border:1.5px solid #E0D3EE;border-radius:14px}
+.lista-senha button{font:500 14px Poppins,system-ui,sans-serif;border:0;border-radius:999px;padding:0 20px;cursor:pointer}
+.lista-erro{color:#B3445A;font-size:14px;margin:8px 0 0}
+.lista-tit{margin:0 0 10px;font:500 14px Poppins,system-ui,sans-serif;color:#9474B8}
+.lista-rolar{overflow-x:auto}
+.lista table{width:100%;border-collapse:collapse;font:13px Poppins,system-ui,sans-serif;color:#4B3F5C}
+.lista th{background:#A88BC9;color:#fff;text-align:left;padding:8px;font-weight:500;white-space:nowrap}
+.lista td{padding:7px 8px;border-bottom:1px solid #EDE4F5;vertical-align:top}
+.lista tr:nth-child(odd) td{background:#FBF8FD}
 </style>
 </head>
 <body>
@@ -49,6 +63,18 @@ a{color:#9474B8}
   <div class="faltam" id="faltam" hidden></div>
 </div>
 <div class="at" id="at">Atualizando...</div>
+<button class="ver-lista" id="ver-lista" type="button">📋 Ver a lista das inscritas</button>
+<div class="lista" id="lista" hidden>
+  <form id="f-lista" class="lista-senha">
+    <label for="lista-senha">Senha da lista</label>
+    <div><input id="lista-senha" type="password" autocomplete="current-password" placeholder="Digite a senha"><button type="submit">Ver lista</button></div>
+    <p class="lista-erro" id="lista-erro" hidden></p>
+  </form>
+  <div id="lista-tab" hidden>
+    <p class="lista-tit" id="lista-tit"></p>
+    <div class="lista-rolar"><table id="tab"></table></div>
+  </div>
+</div>
 <script src="config.js"></script>
 <script>
 const MESES=["janeiro","fevereiro","março","abril","maio","junho","julho","agosto","setembro","outubro","novembro","dezembro"];
@@ -75,6 +101,29 @@ async function atualizar(){
 }
 try{mostrar(JSON.parse(localStorage.getItem("cha-config")||"null"));}catch(_){}
 atualizar(); setInterval(atualizar,60000);
+
+// Lista das inscritas: precisa da senha da lista (ou a da administração). Os nomes não ficam no contador sem a senha.
+let senhaLista = ""; try { senhaLista = sessionStorage.getItem("cha-lista") || ""; } catch (_) {}
+document.getElementById("ver-lista").addEventListener("click", () => {
+  const l = document.getElementById("lista"); l.hidden = !l.hidden;
+  if (!l.hidden && senhaLista) carregarLista(); else if (!l.hidden) document.getElementById("lista-senha").focus();
+});
+document.getElementById("f-lista").addEventListener("submit", e => { e.preventDefault(); senhaLista = document.getElementById("lista-senha").value; carregarLista(); });
+async function carregarLista() {
+  const erro = document.getElementById("lista-erro"); erro.hidden = true;
+  try {
+    const r = await (await fetch(window.CHA_CONFIG_URL, { method: "POST", body: JSON.stringify({ acao: "lista_contador", senha: senhaLista }) })).json();
+    if (!r.ok) { erro.textContent = r.erro; erro.hidden = false; senhaLista = ""; try { sessionStorage.removeItem("cha-lista"); } catch (_) {} return; }
+    try { sessionStorage.setItem("cha-lista", senhaLista); } catch (_) {}
+    const L = r.lista, t = document.getElementById("tab");
+    document.getElementById("f-lista").hidden = true; document.getElementById("lista-tab").hidden = false;
+    document.getElementById("lista-tit").textContent = L.linhas.length + (L.linhas.length === 1 ? " inscrita" : " inscritas") + " · " + L.titulo;
+    t.innerHTML = "";
+    const tr0 = document.createElement("tr"); ["Nº"].concat(L.cab).forEach(c => { const th = document.createElement("th"); th.textContent = c; tr0.appendChild(th); });
+    t.appendChild(tr0);
+    L.linhas.forEach((l, i) => { const tr = document.createElement("tr"); [String(i + 1)].concat(l).forEach(c => { const td = document.createElement("td"); td.textContent = c; tr.appendChild(td); }); t.appendChild(tr); });
+  } catch (e) { erro.textContent = "Sem conexão agora. Tente de novo."; erro.hidden = false; }
+}
 </script>
 </body>
 </html>
