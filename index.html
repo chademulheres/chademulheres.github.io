@@ -472,7 +472,7 @@ h2,.convbox .convh,.eyebrow,.k,.ag-item .k,.ag-item svg,.ag-item a,.vids-title,.
 .insta-home .btn{margin-top:26px}
 @media(max-width:520px){.insta-grid{gap:6px}.insta-item{border-radius:10px}}
 
-#aval-nome-box{display:flex;flex-direction:column;gap:6px}#aval-nome-box[hidden]{display:none}
+.aval-campos{display:flex;flex-direction:column;gap:6px}.aval-campos[hidden]{display:none}
 .aval-login{text-align:center;margin:6px 0}.aval-login p{margin:0 0 8px;font-family:var(--f-sans);font-size:14px;color:var(--muted)}
 #aval-gbtn{display:flex;justify-content:center}
 .aval-quem{display:flex;align-items:center;justify-content:center;gap:10px;font-family:var(--f-sans);font-size:14px;color:var(--ink);margin:6px 0}
@@ -651,26 +651,24 @@ h2,.convbox .convh,.eyebrow,.k,.ag-item .k,.ag-item svg,.ag-item a,.vids-title,.
     <a class="back" href="#inicio" data-page="inicio"><span aria-hidden="true">←</span> Voltar ao início</a>
     <div class="eyebrow">Depoimentos</div>
     <h2>O que elas dizem</h2>
-    <p>Esteve em algum Chá? Conte como foi para você. Seu comentário aparece aqui depois que as organizadoras aprovarem. 💜</p>
+    <p>Esteve em algum Chá? Conte como foi para você. Para avaliar, é preciso entrar com a sua conta Google. O comentário aparece aqui depois que as organizadoras aprovarem. 💜</p>
     <div class="aval-media" id="aval-media" hidden></div>
     <div class="aval-lista" id="aval-lista"></div>
     <form class="aval-form" id="aval-form">
       <h3>Deixe sua avaliação</h3>
-      <div class="aval-estrelas" id="aval-estrelas" role="radiogroup" aria-label="Nota">
-        <button type="button" data-n="1" aria-label="1 estrela">★</button><button type="button" data-n="2" aria-label="2 estrelas">★</button><button type="button" data-n="3" aria-label="3 estrelas">★</button><button type="button" data-n="4" aria-label="4 estrelas">★</button><button type="button" data-n="5" aria-label="5 estrelas">★</button>
-      </div>
-      <div class="aval-login" id="aval-login" hidden>
-        <p>Entre com sua conta Google para comentar:</p>
+      <div class="aval-login" id="aval-login">
+        <p id="aval-login-txt">Para avaliar, entre com a sua conta Google:</p>
         <div id="aval-gbtn"></div>
       </div>
       <div class="aval-quem" id="aval-quem" hidden><img id="aval-foto" alt=""><span>Comentando como <b id="aval-nomeg"></b></span><button type="button" id="aval-sair">Sair</button></div>
-      <div id="aval-nome-box">
-        <label for="aval-nome">Seu nome <small>(pode deixar em branco)</small></label>
-        <input id="aval-nome" type="text" maxlength="60" placeholder="Ex.: Maria">
+      <div class="aval-campos" id="aval-campos" hidden>
+      <div class="aval-estrelas" id="aval-estrelas" role="radiogroup" aria-label="Nota">
+        <button type="button" data-n="1" aria-label="1 estrela">★</button><button type="button" data-n="2" aria-label="2 estrelas">★</button><button type="button" data-n="3" aria-label="3 estrelas">★</button><button type="button" data-n="4" aria-label="4 estrelas">★</button><button type="button" data-n="5" aria-label="5 estrelas">★</button>
       </div>
       <label for="aval-texto">Seu comentário</label>
       <textarea id="aval-texto" maxlength="600" rows="4" placeholder="Como foi o Chá para você?"></textarea>
       <button class="btn" type="submit">Enviar avaliação</button>
+      </div>
       <p class="aval-msg" id="aval-msg" hidden></p>
     </form>
   </div>
@@ -871,7 +869,8 @@ function renderAvaliacoes(c){
   const cid=window.CHA_GOOGLE_CLIENT_ID||"";
   const decod=t=>{try{return JSON.parse(decodeURIComponent(escape(atob(t.split(".")[1].replace(/-/g,"+").replace(/_/g,"/")))));}catch(_){return {};}};
   const mostrarQuem=()=>{const d=credencial?decod(credencial):null;
-    document.getElementById("aval-quem").hidden=!d; document.getElementById("aval-login").hidden=!!d||!cid; document.getElementById("aval-nome-box").hidden=!!cid;
+    document.getElementById("aval-quem").hidden=!d; document.getElementById("aval-login").hidden=!!d; document.getElementById("aval-campos").hidden=!d;
+    if(!cid) document.getElementById("aval-login-txt").textContent="Em breve você poderá deixar sua avaliação aqui, entrando com a sua conta Google. 🌸";
     if(d){document.getElementById("aval-nomeg").textContent=d.given_name||d.name||"";const im=document.getElementById("aval-foto");im.src=d.picture||"";im.hidden=!d.picture;}};
   if(cid){
     const sc=document.createElement("script"); sc.src="https://accounts.google.com/gsi/client"; sc.async=true;
@@ -886,10 +885,10 @@ function renderAvaliacoes(c){
     const aviso=(t,ok)=>{m.hidden=false;m.textContent=t;m.className="aval-msg "+(ok?"ok":"erro");};
     if(!nota) return aviso("Toque nas estrelas para dar sua nota.",false);
     if(txt.length<3) return aviso("Escreva um comentário.",false);
-    if(cid&&!credencial) return aviso("Entre com sua conta Google para enviar.",false);
+    if(!credencial) return aviso("Entre com sua conta Google para enviar.",false);
     if(!window.CHA_CONFIG_URL) return aviso("Não foi possível enviar agora.",false);
     bt.disabled=true; bt.textContent="Enviando...";
-    try{const r=await (await fetch(window.CHA_CONFIG_URL,{method:"POST",body:JSON.stringify({acao:"avaliar",nota,texto:txt,nome:document.getElementById("aval-nome").value,credencial})})).json();
+    try{const r=await (await fetch(window.CHA_CONFIG_URL,{method:"POST",body:JSON.stringify({acao:"avaliar",nota,texto:txt,credencial})})).json();
       if(!r.ok) throw new Error(r.erro||"");
       document.getElementById("aval-texto").value=""; nota=0; pinta(0); aviso("Obrigada! 💜 Seu comentário foi enviado e aparece aqui depois que as organizadoras aprovarem.",true);
     }catch(err){aviso("Não deu certo agora. "+(err.message||"Tente de novo em alguns minutos."),false);}
