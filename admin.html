@@ -170,6 +170,8 @@ textarea{min-height:70px;resize:vertical}
 .av-bts button{font:500 13px Poppins,system-ui,sans-serif;border-radius:999px;padding:8px 14px;cursor:pointer;border:1.5px solid #A88BC9;background:#fff;color:#7A5FA0}
 .av-bts button.ok{background:linear-gradient(90deg,#A88BC9,#D7A6C4);color:#fff;border:0}
 .av-bts button.x{border-color:var(--erro);color:var(--erro)}
+.insta-cfg{margin-top:22px;padding:18px;border:1px solid var(--line);border-radius:16px;background:#fff}
+.insta-cfg b{color:#9474B8}
 .dois{display:grid;gap:0 16px}
 .dois.botoes{gap:0 12px}
 @media(min-width:600px){
@@ -411,6 +413,11 @@ input::placeholder,textarea::placeholder{color:rgba(75,63,92,.4)!important}
       <h2>Links</h2>
       <p class="sub">Para copiar e mandar para quem precisar.</p>
       <div class="links" id="links"></div>
+      <div class="insta-cfg">
+        <b>📸 Instagram no site</b>
+        <p class="sub" style="margin:4px 0 10px">Cole aqui o link do feed do Behold (começa com <code>https://feeds.behold.so/</code>). As últimas fotos e vídeos do Instagram aparecem no site, na parte "Siga no Instagram". Deixe vazio e salve para tirar.</p>
+        <div class="cor-linha"><input id="insta-url" type="url" placeholder="https://feeds.behold.so/..."><button class="btn" id="b-insta" type="button" style="width:auto;margin:0;padding:12px 24px">Salvar</button></div>
+      </div>
       <div class="msg" id="m-links"></div>
     </section>
 
@@ -454,6 +461,7 @@ function preencher(p) {
   listaNomes("aviso", p.avisoNomes); listaNomes("lembrete", p.lembreteNomes);
   listaPedidos(p.pedidosSair || []);
   montarLinks(p.planilha);
+  if (document.activeElement !== $("insta-url")) $("insta-url").value = p.instaUrl || "";
   listaAvaliacoes(p.avaliacoes || []);
   custoMsg = p.custoMsg || custoMsg;
   proximoCha = { data: c.data || "", tema: c.tema || "" };
@@ -701,6 +709,14 @@ $("ins-aba").addEventListener("change", e => carregarInscritas(e.target.value));
 $("ins-pdf").addEventListener("click", () => {
   const t = document.title; document.title = $("ins-tit").textContent.replace(/[\/:]/g, "-");
   window.print(); setTimeout(() => document.title = t, 1000);
+});
+$("b-insta").addEventListener("click", async e => {
+  const b = e.currentTarget; b.disabled = true;
+  try { const r = await pedir({ acao: "insta_salvar", url: $("insta-url").value.trim() });
+    if (r.ok) { preencher(r.painel); msg("m-links", $("insta-url").value.trim() ? "Instagram ligado! ✅ As fotos aparecem no site em alguns minutos." : "Instagram tirado do site.", true); }
+    else msg("m-links", r.erro, false);
+  } catch (err) { msg("m-links", "Não consegui falar com a planilha. " + err.message, false); }
+  finally { b.disabled = false; }
 });
 function listaAvaliacoes(L) {
   const el = $("avals"); el.innerHTML = "";
