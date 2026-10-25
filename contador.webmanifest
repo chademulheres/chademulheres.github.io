@@ -5,8 +5,8 @@
   "start_url": "contador.html",
   "scope": "./",
   "display": "standalone",
-  "background_color": "#3F2530",
-  "theme_color": "#3F2530",
+  "background_color": "#F7F2FB",
+  "theme_color": "#F7F2FB",
   "lang": "pt-BR",
   "icons": [
     {

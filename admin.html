@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex,nofollow">
 <title>Administração · Chá de Mulheres</title>
-<meta name="theme-color" content="#3F2530">
+<meta name="theme-color" content="#F7F2FB">
 <link rel="icon" href="icon.png">
 <link rel="manifest" href="admin.webmanifest">
 <link rel="apple-touch-icon" href="img/app-180.png">
@@ -190,11 +190,38 @@ textarea{min-height:70px;resize:vertical}
   .fotos{grid-template-columns:repeat(8,1fr)}
 }
 [hidden]{display:none!important}
+
+/* ===== Tema Lavanda aquarela (igual ao site) ===== */
+:root{--deep:#F7F2FB;--card:rgba(255,255,255,.72);--gold:#9474B8;--gold-soft:#9474B8;--cream:#4B3F5C;--muted:#8E84A0;--line:rgba(150,120,190,.28);--campo:#FFFFFF;--ok:#2E7D4F;--erro:#B3445A}
+body{background:linear-gradient(180deg,#F7F2FB 0%,#FBF8FD 45%,#F3EEF9 100%)!important;color:#4B3F5C}
+header p{color:#9474B8}
+.box{background:rgba(255,255,255,.72)!important;backdrop-filter:blur(6px);border:1px solid rgba(180,160,210,.35)!important;border-radius:24px!important;box-shadow:0 18px 40px rgba(120,90,160,.10)!important}
+input,textarea,select{color-scheme:light!important;color:#4B3F5C!important}
+input::placeholder,textarea::placeholder{color:rgba(75,63,92,.4)!important}
+.btn{background:linear-gradient(90deg,#A88BC9,#D7A6C4)!important;color:#fff!important;box-shadow:0 6px 18px rgba(120,90,160,.2)!important}
+.btn.borda{background:transparent!important;color:#9474B8!important;border:1.5px solid #A88BC9!important;box-shadow:none!important}
+.btn.claro{background:linear-gradient(90deg,#A88BC9,#D7A6C4)!important;color:#fff!important}
+.btn.perigo{color:var(--erro)!important;border-color:var(--erro)!important}
+.msg.ok{background:#E8F5EC!important;color:#2E7D4F!important;border-color:#BFE3CB!important}
+.msg.erro{background:#FBE9EC!important;color:#B3445A!important;border-color:#F1C4CC!important}
+.abas a{background:rgba(255,255,255,.75)!important;color:#7A5FA0!important;border-color:rgba(180,160,210,.4)!important}
+.abas a.ativa{background:linear-gradient(90deg,#A88BC9,#D7A6C4)!important;color:#fff!important;border-color:transparent!important}
+.abas a.fraco{background:none!important;color:#7A5FA0!important}
+.gal-card,.link-card,.envios .envio,.pedidos li,.molduras button{background:#fff!important}
+.gc-img em,.bolinha{color:#fff!important}
+.gc-img em{background:#A88BC9!important}
+.gal-card.novo button,.lk-bts .copiar{background:linear-gradient(90deg,#A88BC9,#D7A6C4)!important;color:#fff!important;border:0!important}
+.link-card code{background:#F3EEF9!important;color:#4B3F5C!important}
+.num{color:#4B3F5C!important}
+.ins-bar select{background:#fff!important;color:#4B3F5C!important}
+.cores button{border-color:#fff!important}
+.cores button[aria-pressed=true]{box-shadow:0 0 0 3px #A88BC9!important}
+.qualquer{color:#4B3F5C!important;border-color:#A88BC9!important}
 </style>
 </head>
 <body>
 <header>
-  <img src="img/logo-horizontal-claro.png" alt="Chá de Mulheres – Gerando Testemunho">
+  <img src="img/logo-horizontal.png" alt="Chá de Mulheres – Gerando Testemunho">
   <p>Administração</p>
 </header>
 <main>
@@ -241,14 +268,16 @@ textarea{min-height:70px;resize:vertical}
         <label for="tema">Tema</label>
         <input id="tema" type="text" placeholder="Ex.: Mulheres Posicionadas">
         </div><div>
-        <label>Cor do site</label>
-        <div class="dica" style="margin-bottom:6px">Escolha uma bolinha, qualquer cor no quadro, ou digite o nome ou o código.</div>
+        <label>Cor do Chá (a cor da roupa)</label>
+        <div class="dica" style="margin-bottom:6px">Aparece no site como "Cor do Chá" e no convite do WhatsApp. O site continua lavanda. Escolha uma bolinha, qualquer cor no quadro, ou digite o nome.</div>
         <div id="cores">
           <div class="cores"><button type="button" data-cor="#7A4554" title="marsala" aria-label="marsala" style="background:#7A4554"></button><button type="button" data-cor="#9A5A70" title="rosa antigo" aria-label="rosa antigo" style="background:#9A5A70"></button><button type="button" data-cor="#6E4E7E" title="lilás" aria-label="lilás" style="background:#6E4E7E"></button><button type="button" data-cor="#3E5C76" title="azul" aria-label="azul" style="background:#3E5C76"></button><button type="button" data-cor="#5E6B45" title="verde-oliva" aria-label="verde-oliva" style="background:#5E6B45"></button><button type="button" data-cor="#8A5A3C" title="terracota" aria-label="terracota" style="background:#8A5A3C"></button><button type="button" data-cor="#8C6B3A" title="dourado" aria-label="dourado" style="background:#8C6B3A"></button></div>
           <label class="qualquer"><input id="cor" type="color" value="#7A4554"><span>🎨 Escolher <b>qualquer cor</b> no quadro de cores</span></label>
         </div>
         <label for="cor-txt">Ou digite o nome ou o código da cor</label>
         <div class="cor-linha"><span class="amostra" id="amostra"></span><input id="cor-txt" type="text" placeholder="Ex.: vinho, lilás, verde-oliva ou #7A4554" autocomplete="off"></div>
+        <label for="cor-nome">Nome da cor (como aparece no site)</label>
+        <input id="cor-nome" type="text" placeholder="Ex.: Marsala" maxlength="40">
         <div class="dica" id="cor-info">Pode colar o código que vocês acharem na internet (#7A4554, rgb(122,69,84)...).</div>
         </div></div>
         <button class="btn salvar" type="submit">Salvar</button>
@@ -379,7 +408,8 @@ const URL_ROBO = window.CHA_CONFIG_URL || "";
 let senha = "";
 try { senha = sessionStorage.getItem("cha-senha") || ""; } catch (_) {}
 let custoMsg = 0.05;
-function corTema(cor) { if (/^#[0-9a-f]{6}$/i.test(cor || "")) document.documentElement.style.setProperty("--marsala", cor); }
+// o tema da administração é fixo (lavanda); a cor do Chá não muda mais as cores da página
+function corTema() {}
 try { corTema((JSON.parse(localStorage.getItem("cha-config") || "null") || {}).cor); } catch (_) {}
 if (URL_ROBO) fetch(URL_ROBO).then(r => r.json()).then(c => { corTema(c.cor); try { localStorage.setItem("cha-config", JSON.stringify(c)); } catch (_) {} }).catch(() => {});
 const $ = id => document.getElementById(id);
@@ -395,7 +425,7 @@ function preencher(p) {
   const c = p.config;
   corTema(c.cor);
   $("data").value = c.data; $("hora").value = c.hora; $("local").value = c.local; $("tema").value = c.tema;
-  marcarCor(c.cor || "#7A4554");
+  marcarCor(c.cor || "#7A4554"); $("cor-nome").value = c.corNome || "";
   $("n-aviso").textContent = p.aviso + (p.aviso === 1 ? " mulher" : " mulheres");
   $("n-lembrete").textContent = p.lembrete + (p.lembrete === 1 ? " mulher" : " mulheres");
   listaNomes("aviso", p.avisoNomes); listaNomes("lembrete", p.lembreteNomes);
@@ -446,8 +476,10 @@ $("cor-txt").addEventListener("input", e => {
   if (!e.target.value.trim()) { info.className = "dica"; info.textContent = "Pode colar o código que vocês acharem na internet (#7A4554, rgb(122,69,84)...)."; return; }
   if (!cor) { info.className = "dica aviso"; info.textContent = "Não reconheci essa cor. Tente outro nome ou cole o código (ex.: #7A4554)."; return; }
   marcarCor(cor, true);
-  info.className = clara(cor) ? "dica aviso" : "dica";
-  info.textContent = "Cor escolhida: " + cor + (clara(cor) ? " · Atenção: é uma cor clara, os textos brancos do site podem ficar difíceis de ler. Prefira um tom mais escuro." : " ✓");
+  const t = e.target.value.trim();
+  if (!/^#|^rgb|^hsl/i.test(t)) $("cor-nome").value = t.charAt(0).toUpperCase() + t.slice(1);
+  info.className = "dica";
+  info.textContent = "Cor escolhida: " + cor + " ✓";
 });
 function marcarCor(cor, doTexto) {
   $("cor").value = cor;
@@ -455,7 +487,7 @@ function marcarCor(cor, doTexto) {
   if (!doTexto) $("cor-txt").value = cor.toUpperCase();
   document.querySelectorAll("#cores button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.cor.toLowerCase() === cor.toLowerCase())));
 }
-document.querySelectorAll("#cores button").forEach(b => b.addEventListener("click", () => marcarCor(b.dataset.cor)));
+document.querySelectorAll("#cores button").forEach(b => b.addEventListener("click", () => { marcarCor(b.dataset.cor); $("cor-nome").value = b.title.charAt(0).toUpperCase() + b.title.slice(1); }));
 $("cor").addEventListener("input", e => marcarCor(e.target.value));
 
 async function entrar() {
@@ -476,7 +508,7 @@ $("f-cha").addEventListener("submit", async e => {
   e.preventDefault();
   const btn = e.target.querySelector("button[type=submit]"); btn.disabled = true; btn.textContent = "Salvando...";
   try {
-    const r = await pedir({ acao: "salvar", data: $("data").value, hora: $("hora").value, local: $("local").value, tema: $("tema").value, cor: $("cor").value });
+    const r = await pedir({ acao: "salvar", data: $("data").value, hora: $("hora").value, local: $("local").value, tema: $("tema").value, cor: $("cor").value, corNome: $("cor-nome").value.trim() });
     if (r.ok) { preencher(r.painel); msg("m-cha", "Salvo! ✅ O site já mostra os dados novos (pode levar 1 minuto).", true); }
     else msg("m-cha", r.erro, false);
   } catch (e) { msg("m-cha", "Não consegui salvar. " + e.message, false); }

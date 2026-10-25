@@ -13,7 +13,7 @@
 <meta property="og:url" content="https://chademulheres.github.io/">
 <link rel="canonical" href="https://chademulheres.github.io/">
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"Organization","name":"Chá de Mulheres – Gerando Testemunho","alternateName":["Chá de Mulheres Ribeirão Preto","Chá de Mulheres RP"],"url":"https://chademulheres.github.io/","logo":"https://chademulheres.github.io/img/app-512.png","sameAs":["https://www.instagram.com/chadevocional_29/"],"address":{"@type":"PostalAddress","addressLocality":"Ribeirão Preto","addressRegion":"SP","addressCountry":"BR"}}</script>
-<meta name="theme-color" content="#3F2530">
+<meta name="theme-color" content="#F7F2FB">
 <link rel="icon" href="icon.png">
 <link rel="manifest" href="site.webmanifest">
 <link rel="apple-touch-icon" href="img/app-180.png">
@@ -400,6 +400,42 @@ body.sem-cha .only-com-cha{display:none !important}
 .ag-item .v{font-size:18px;line-height:1.45;color:var(--cream)}
 .ag-item a{font-family:var(--f-sans);font-size:14px;color:var(--gold-soft);margin-top:2px;justify-self:start}
 @media(max-width:480px){.agenda-box{padding:22px 18px}.ag-item .v{font-size:17px}}
+
+/* ===== Tema Lavanda aquarela (escolhido em 25/10): fundo claro fixo, a cor do Chá aparece só na bolinha ===== */
+:root{--marsala:#7A4554;--ink:#4B3F5C;--muted:#8E84A0;--line:#E6DCF0;--paper:#FFFFFF;--tone-1:#F7F2FB;--tone-2:#F3EEF9;--cream:#4B3F5C;--gold-soft:#A88BC9;--lilas:#A88BC9;--lilas-tit:#9474B8}
+body,.pg,.amiga,.hero{background:linear-gradient(180deg,#F7F2FB 0%,#FBF8FD 45%,#F3EEF9 100%)!important;color:var(--ink)}
+.info,.final,footer{background:#F3EEF9!important;color:var(--ink)}
+.hero{color:var(--ink)}
+.hero::before{background:radial-gradient(60% 40% at 80% 10%,rgba(201,178,226,.45),transparent 70%),radial-gradient(50% 35% at 10% 60%,rgba(240,205,225,.45),transparent 70%)!important}
+.hero h1{position:relative;padding:40px 0}
+.hero h1::before{content:"";position:absolute;left:50%;top:50%;width:min(720px,92vw);height:260px;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(closest-side,rgba(206,184,232,.75),rgba(240,210,230,.45) 60%,transparent);filter:blur(8px);z-index:-1}
+.hero .floral2,.hero::after,.pg::before,.pg::after,.side::after{filter:hue-rotate(55deg) saturate(.8)}
+.sobre,.convbox .verse,.next,.count div,.home-verse,.noevent,.agenda-box,.verse,.vcard,.card{background:rgba(255,255,255,.62)!important;backdrop-filter:blur(6px);border:1px solid rgba(180,160,210,.35)!important;border-radius:28px!important;box-shadow:0 18px 40px rgba(120,90,160,.10)!important}
+.ed,.org{background:#fff!important;border-color:var(--line)!important}
+.sobre p,.sobre blockquote,.convbox .text p,.final p,footer,footer a{color:var(--ink)!important}
+h2,.convbox .convh,.eyebrow,.k,.ag-item .k,.ag-item svg,.ag-item a,.vids-title,.side .brand,.final h2{color:var(--lilas-tit)!important}
+.info h2::after,.final h2::after,.pg h2::after{filter:hue-rotate(250deg) saturate(.5)}
+.btn,.btn.gold{border-radius:999px!important;background:linear-gradient(90deg,#A88BC9,#D7A6C4)!important;color:#fff!important;box-shadow:0 6px 18px rgba(120,90,160,.2)!important;border:0!important}
+.btn.ghost{background:transparent!important;border:1.5px solid var(--lilas)!important;color:var(--lilas-tit)!important;box-shadow:none!important}
+.btn.wa{background:#25D366!important}
+.side{background:rgba(255,255,255,.8)!important;color:var(--ink);border-right:1px solid var(--line)}
+.side nav a,.side .brand small,.sub-toggle,.side .ig,.side .ig-label{color:var(--ink)!important}
+.side nav a:hover,.side nav a.on,.sub-toggle:hover,.sub-toggle.on{background:#EFE6F7!important}
+.topm.solid,.bar.solid{background:rgba(255,255,255,.92)!important}
+.topm .logo{color:var(--lilas-tit)!important}
+.menu-btn{color:var(--ink)!important;border-color:var(--line)!important;background:#fff!important}
+.scrim{background:rgba(255,255,255,.4)}
+.vids .vbox{filter:hue-rotate(55deg);background:#F3EEF9!important}
+.vids .vbox video,.vids .vbox iframe{filter:hue-rotate(-55deg)}
+.vids .vbox::after{background:transparent!important}
+.vids.dark figcaption,.vids figcaption{color:var(--ink)!important}
+.back{color:var(--lilas-tit)!important;background:#fff!important;border-color:var(--line)!important}
+.count div b,.count div span,.verse q,.vcard blockquote p,.ed b{color:var(--ink)!important}
+.home-links a{color:var(--ink)!important;background:#fff!important;border-color:var(--line)!important}
+/* Cor do Chá */
+.cor1{display:flex;align-items:center;gap:14px}.cor1 i{flex:none;width:46px;height:46px;border-radius:50%;border:3px solid #fff;box-shadow:0 0 0 1px var(--line),0 4px 10px rgba(80,40,50,.15)}.cor1 small{font-size:15px;color:var(--muted)}
+.cor-next{display:inline-flex;align-items:center;gap:10px;margin-top:12px;padding:6px 16px 6px 6px;border:1px solid var(--line);border-radius:999px;font-family:var(--f-sans);font-size:14px;color:var(--ink);background:#fff}.cor-next i{width:28px;height:28px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 1px var(--line)}
+[data-cor][hidden]{display:none!important}
 </style>
 
 
@@ -442,7 +478,7 @@ body.sem-cha .only-com-cha{display:none !important}
 
 <div class="page" id="p-inicio"><section class="hero"><div class="floral2" aria-hidden="true"></div>
   <div class="in">
-    <h1 class="logo"><picture><source media="(min-width:700px)" srcset="img/logo-horizontal-claro.png"><img src="img/logo-vertical-claro.png" alt="Chá de Mulheres – Gerando Testemunho, Ribeirão Preto" width="900" height="745"></picture></h1>
+    <h1 class="logo"><picture><source media="(min-width:700px)" srcset="img/logo-horizontal.png"><img src="img/logo-horizontal.png" alt="Chá de Mulheres – Gerando Testemunho, Ribeirão Preto" width="900" height="745"></picture></h1>
     <section class="sobre" aria-label="Sobre o Chá de Mulheres">
       <div class="eyebrow">Sobre o Chá 🌷</div>
       <div class="txt">
@@ -476,6 +512,7 @@ body.sem-cha .only-com-cha{display:none !important}
       <div class="eyebrow">Próximo encontro</div>
       <p class="tema"><b data-cfg="tema">Mulheres Posicionadas</b></p>
       <div class="when" data-cfg="when">Sábado, 14 de novembro de 2026 · 19h30 · Ribeirão Preto</div>
+      <div class="cor-next" data-cor hidden><i></i><span>Cor do Chá: <b data-cfg="corNome"></b></span></div>
     </div>
     <div class="noevent" id="noevent">
       <div class="eyebrow">Próximo encontro</div>
@@ -511,6 +548,11 @@ body.sem-cha .only-com-cha{display:none !important}
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 10h13v4a6 6 0 0 1-6 6h-1a6 6 0 0 1-6-6z"/><path d="M17 11h1.5a2.5 2.5 0 0 1 0 5H16M8 3c0 2 2 2 2 4M12 3c0 2 2 2 2 4"/></svg>
         <span class="k">Traga</span>
         <span class="v">Um prato salgado ou doce para partilharmos juntas</span>
+      </div>
+      <div class="ag-item" data-cor hidden>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><circle cx="8.5" cy="10" r="1.3"/><circle cx="12" cy="7.5" r="1.3"/><circle cx="15.5" cy="10" r="1.3"/></svg>
+        <span class="k">Cor do Chá</span>
+        <span class="v cor1"><i></i><span><b data-cfg="corNome"></b><br><small>Venha vestida com a cor do nosso Chá! 💐</small></span></span>
       </div>
     </div>
   </div>
@@ -723,11 +765,10 @@ function aplicarConfig(c){
   try{eventoGoogle(c);}catch(_){}
   if(Array.isArray(c.galeria)&&c.galeria.length) renderGaleria(c.galeria,c.data);
   const set=(k,v)=>document.querySelectorAll('[data-cfg="'+k+'"]').forEach(e=>{e.textContent=v});
-  if(c.cor&&/^#[0-9a-f]{6}$/i.test(c.cor)){const r=document.documentElement.style;
-    r.setProperty("--marsala",c.cor);
-    r.setProperty("--marsala-deep","color-mix(in srgb,"+c.cor+" 52%,#12080c)");
-    r.setProperty("--marsala-mid","color-mix(in srgb,"+c.cor+" 70%,#fff)");
-    const tc=document.querySelector('meta[name="theme-color"]'); if(tc) tc.content=c.cor;}
+  // a cor escolhida na administração é a "Cor do Chá" (a roupa); o site fica sempre no tema lavanda
+  const temCor=c.cor&&/^#[0-9a-f]{6}$/i.test(c.cor);
+  document.querySelectorAll("[data-cor]").forEach(e=>{e.hidden=!temCor;const i=e.querySelector("i");if(i&&temCor)i.style.background=c.cor;});
+  set("corNome",c.corNome||"");
   if(c.tema){set("tema",c.tema);}
   if(c.local){set("local",c.local);document.querySelectorAll('[data-cfg="mapa"]').forEach(a=>{a.href="https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(c.local)});}
   if(c.hora) set("horaTxt","Às "+c.hora);
@@ -749,6 +790,8 @@ function aplicarConfig(c){
     t=t.replace(/(📅 Data: ).*/,"$1"+d+" de "+MESES[m-1]+" de "+y);
     if(c.hora) t=t.replace(/(⏰ Horário: ).*/,"$1Às "+c.hora);
     if(c.local) t=t.replace(/(📍 Local: ).*/,"$1"+c.local);
+    t=t.replace(/\n👗 Cor do Chá: .*/,"");
+    if(c.corNome) t=t.replace(/(📍 Local: .*)/,"$1\n👗 Cor do Chá: "+c.corNome);
     wa.href="https://wa.me/?text="+encodeURIComponent(t);}
   tick();
 }

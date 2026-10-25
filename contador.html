@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex,nofollow">
-<meta name="theme-color" content="#3F2530">
+<meta name="theme-color" content="#F7F2FB">
 <title>Inscritas · Chá de Mulheres</title>
 <link rel="icon" href="icon.png">
 <link rel="manifest" href="contador.webmanifest">
@@ -28,10 +28,19 @@ img{width:min(80vw,380px);height:auto}
 .info{color:var(--muted);font-size:15px;margin-top:10px}
 .faltam{margin-top:18px;padding-top:16px;border-top:1px solid var(--line);font-family:Poppins,system-ui,sans-serif;font-size:14px;color:var(--gold-soft)}
 .at{font-family:Poppins,system-ui,sans-serif;font-size:12px;color:var(--muted)}
+
+/* ===== Tema Lavanda aquarela (igual ao site) ===== */
+:root{--deep:#F7F2FB;--card:rgba(255,255,255,.72);--gold-soft:#9474B8;--cream:#4B3F5C;--muted:#8E84A0;--line:rgba(150,120,190,.28);--erro:#B3445A}
+body{background:linear-gradient(180deg,#F7F2FB 0%,#FBF8FD 45%,#F3EEF9 100%)!important;color:#4B3F5C}
+.card{background:rgba(255,255,255,.72)!important;backdrop-filter:blur(6px);border:1px solid rgba(180,160,210,.35)!important;border-radius:28px!important;box-shadow:0 18px 40px rgba(120,90,160,.10)!important}
+.num{color:#4B3F5C!important}
+input{background:#fff!important;color:#4B3F5C!important}
+button{background:linear-gradient(90deg,#A88BC9,#D7A6C4)!important;color:#fff!important}
+a{color:#9474B8}
 </style>
 </head>
 <body>
-<picture><source media="(min-width:700px)" srcset="img/logo-horizontal-claro.png"><img src="img/logo-vertical-claro.png" alt="Chá de Mulheres – Gerando Testemunho"></picture>
+<picture><source media="(min-width:700px)" srcset="img/logo-horizontal.png"><img src="img/logo-horizontal.png" alt="Chá de Mulheres – Gerando Testemunho"></picture>
 <div class="card">
   <div class="rot">Inscritas até agora</div>
   <div class="num" id="num">–</div>
@@ -46,7 +55,7 @@ const MESES=["janeiro","fevereiro","março","abril","maio","junho","julho","agos
 const DIAS=["domingo","segunda-feira","terça-feira","quarta-feira","quinta-feira","sexta-feira","sábado"];
 function mostrar(c){
   if(!c) return;
-  if(/^#[0-9a-f]{6}$/i.test(c.cor||"")){document.documentElement.style.setProperty("--marsala",c.cor);const tc=document.querySelector('meta[name="theme-color"]');if(tc)tc.content=getComputedStyle(document.body).backgroundColor;}
+  // o tema é fixo (lavanda); a cor do Chá não muda mais as cores do contador
   if(typeof c.total==="number") document.getElementById("num").textContent=c.total;
   document.getElementById("tema").textContent=c.tema||"Chá de Mulheres";
   if(c.data){
