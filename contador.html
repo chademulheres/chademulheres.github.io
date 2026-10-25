@@ -51,6 +51,25 @@ a{color:#9474B8}
 .lista th{background:#A88BC9;color:#fff;text-align:left;padding:8px;font-weight:500;white-space:nowrap}
 .lista td{padding:7px 8px;border-bottom:1px solid #EDE4F5;vertical-align:top}
 .lista tr:nth-child(odd) td{background:#FBF8FD}
+
+.lista-bts{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 12px}
+.lista-bts button{font:500 14px Poppins,system-ui,sans-serif;border:0;border-radius:999px;padding:10px 18px;cursor:pointer}
+.lista-print-cab{display:none}
+@media print{
+  @page{size:A4 landscape;margin:12mm}
+  body{background:#fff!important;display:block;padding:0}
+  body > *:not(.lista){display:none!important}
+  .lista{width:100%;border:0;padding:0;background:#fff;box-shadow:none}
+  .lista-senha,.lista-bts,.lista-tit{display:none!important}
+  .lista-print-cab{display:flex;flex-direction:column;align-items:center;gap:4px;margin-bottom:8px}
+  .lista-print-cab img{width:170px}
+  .lista-print-cab b{font:600 13px Lora,Georgia,serif;color:#4B3F5C}
+  .lista-rolar{overflow:visible}
+  .lista table{font-size:9.5px}
+  .lista th{padding:4px 5px;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .lista td{padding:2.5px 5px}
+  .lista tr{break-inside:avoid}
+}
 </style>
 </head>
 <body>
@@ -72,6 +91,8 @@ a{color:#9474B8}
   </form>
   <div id="lista-tab" hidden>
     <p class="lista-tit" id="lista-tit"></p>
+    <div class="lista-bts"><button type="button" id="b-pdf">📄 Salvar em PDF</button><button type="button" id="b-excel">📊 Baixar para o Excel</button></div>
+    <div class="lista-print-cab" id="lista-print-cab"><img src="img/logo-horizontal.png" alt=""><b id="lista-print-tit"></b></div>
     <div class="lista-rolar"><table id="tab"></table></div>
   </div>
 </div>
@@ -103,6 +124,25 @@ try{mostrar(JSON.parse(localStorage.getItem("cha-config")||"null"));}catch(_){}
 atualizar(); setInterval(atualizar,60000);
 
 // Lista das inscritas: precisa da senha da lista (ou a da administração). Os nomes não ficam no contador sem a senha.
+let listaAtual = null;
+// exportar: PDF pela impressão do navegador e planilha em CSV (abre no Excel e no Google Planilhas)
+document.getElementById("b-pdf").addEventListener("click", () => {
+  if (!listaAtual) return;
+  document.getElementById("lista-print-tit").textContent = "Inscritas · " + listaAtual.titulo + " · " + listaAtual.linhas.length + " inscritas";
+  const t = document.title; document.title = ("Inscritas " + listaAtual.titulo).replace(/[\/:]/g, "-");
+  window.print(); setTimeout(() => document.title = t, 1000);
+});
+document.getElementById("b-excel").addEventListener("click", () => {
+  if (!listaAtual) return;
+  // números compridos (WhatsApp) vão como texto, senão o Excel mostra 5,5E+12
+  const cel = v => { const t = String(v == null ? "" : v); return /^\+?\d{10,}$/.test(t) ? '="' + t + '"' : '"' + t.replace(/"/g, '""') + '"'; };
+  const linhas = [["Nº"].concat(listaAtual.cab)].concat(listaAtual.linhas.map((l, i) => [i + 1].concat(l)));
+  const csv = "\ufeff" + linhas.map(l => l.map(cel).join(";")).join("\r\n");
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8" }));
+  a.download = ("Inscritas " + listaAtual.titulo).replace(/[\/:*?"<>|]/g, "-") + ".csv";
+  document.body.appendChild(a); a.click(); a.remove();
+});
 let senhaLista = ""; try { senhaLista = sessionStorage.getItem("cha-lista") || ""; } catch (_) {}
 document.getElementById("ver-lista").addEventListener("click", () => {
   const l = document.getElementById("lista"); l.hidden = !l.hidden;
@@ -116,6 +156,7 @@ async function carregarLista() {
     if (!r.ok) { erro.textContent = r.erro; erro.hidden = false; senhaLista = ""; try { sessionStorage.removeItem("cha-lista"); } catch (_) {} return; }
     try { sessionStorage.setItem("cha-lista", senhaLista); } catch (_) {}
     const L = r.lista, t = document.getElementById("tab");
+    listaAtual = L;
     document.getElementById("f-lista").hidden = true; document.getElementById("lista-tab").hidden = false;
     document.getElementById("lista-tit").textContent = L.linhas.length + (L.linhas.length === 1 ? " inscrita" : " inscritas") + " · " + L.titulo;
     t.innerHTML = "";
