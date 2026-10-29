@@ -74,6 +74,15 @@ a{color:#9474B8}
 .acoes-lista{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
 .ver-lista.principal{font-size:16px;padding:14px 28px;box-shadow:0 8px 22px rgba(120,90,160,.28)}
 #ver-lista{background:#fff!important;color:#7A5FA0!important;border:1.5px solid #A88BC9!important}
+
+/* link de inscrição para compartilhar */
+.convidar{width:min(100%,420px);background:rgba(255,255,255,.72);border:1px solid rgba(180,160,210,.35);border-radius:24px;padding:20px 18px 18px;box-shadow:0 18px 40px rgba(120,90,160,.10)}
+.convidar .rot{margin-bottom:8px}
+.convidar .link{display:block;font:500 16px Poppins,system-ui,sans-serif;color:#7A5FA0;word-break:break-all;user-select:all;background:#fff;border:1.5px dashed #CDB8E3;border-radius:14px;padding:10px 12px;margin-bottom:12px;text-decoration:none}
+.convidar .acoes-lista button,.convidar .acoes-lista a{font:500 15px Poppins,system-ui,sans-serif;border:0;border-radius:999px;padding:12px 20px;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:6px}
+#b-zap{background:#25D366!important;color:#fff!important;box-shadow:0 6px 18px rgba(37,211,102,.25)}
+#b-copiar{background:#fff!important;color:#7A5FA0!important;border:1.5px solid #A88BC9!important}
+.convidar .ok{margin:10px 0 0;font:500 14px Poppins,system-ui,sans-serif;color:#2E8B57}
 </style>
 </head>
 <body>
@@ -88,6 +97,15 @@ a{color:#9474B8}
 <div class="at" id="at">Atualizando...</div>
 <div class="acoes-lista"><button class="ver-lista principal" id="comp-rapido" type="button">📤 Compartilhar a lista</button><button class="ver-lista" id="ver-lista" type="button">📋 Ver a lista</button></div>
 <button class="ver-lista principal" id="enviar-agora" type="button" hidden>📤 Pronto! Toque aqui para enviar</button>
+<div class="convidar">
+  <div class="rot">Link de inscrição</div>
+  <a class="link" id="link-insc" href="https://tinyurl.com/chademulheresrp" target="_blank" rel="noopener">tinyurl.com/chademulheresrp</a>
+  <div class="acoes-lista">
+    <button type="button" id="b-copiar">🔗 Copiar link</button>
+    <a id="b-zap" href="#" target="_blank" rel="noopener">💬 Enviar convite no WhatsApp</a>
+  </div>
+  <p class="ok" id="link-ok" hidden>Link copiado! ✅ É só colar na conversa.</p>
+</div>
 <div class="lista" id="lista" hidden>
   <form id="f-lista" class="lista-senha">
     <label for="lista-senha">Senha da lista</label>
@@ -107,6 +125,7 @@ const MESES=["janeiro","fevereiro","março","abril","maio","junho","julho","agos
 const DIAS=["domingo","segunda-feira","terça-feira","quarta-feira","quinta-feira","sexta-feira","sábado"];
 function mostrar(c){
   if(!c) return;
+  if(typeof montarConvite==="function") montarConvite(c);
   // o tema é fixo (lavanda); a cor do Chá não muda mais as cores do contador
   if(typeof c.total==="number") document.getElementById("num").textContent=c.total;
   document.getElementById("tema").textContent=c.tema||"Chá de Mulheres";
@@ -125,6 +144,25 @@ async function atualizar(){
     document.getElementById("at").textContent="Atualizado às "+new Date().toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"})+" · atualiza sozinho a cada minuto";
   }catch(e){document.getElementById("at").textContent="Sem conexão agora. Tentando de novo em 1 minuto...";}
 }
+// Link de inscrição: copiar e convite pronto para o WhatsApp (data, horário, local e tema vêm da planilha)
+const LINK_INSC="https://tinyurl.com/chademulheresrp";
+const CONVITE_BASE="🌷☕ CONVITE ESPECIAL – CHÁ DE MULHERES ☕🌷\n\n✨ GERANDO TESTEMUNHO ✨\n🌸 Tema: MULHERES POSICIONADAS 🌸\n\nQuerida mulher, você é nossa convidada especial para viver uma noite de comunhão, adoração, edificação e uma palavra poderosa da parte de Deus! ❤️\n\nDeus tem um propósito para a sua vida, e este é um tempo de nos posicionarmos na presença d’Ele, fortalecermos nossa fé e permitirmos que Ele escreva novos capítulos da nossa história.\n\n📖 “Filha, não temas. Tudo o que disseres, eu farei por ti...”\nRute 3:11\n\nCremos que será uma noite de bênçãos, renovo espiritual e testemunhos para a glória de Deus! 🙌🏻✨\n\n📅 Data: 14 de novembro de 2026\n⏰ Horário: Às 19h30\n📍 Local: Av. Ettore e Aurora Coraucci, 2071 – Jd. Orestes Lopes de Camargo, Ribeirão Preto\n🍰 Traga um prato salgado ou doce\n\n💌 Prepare seu coração, convide uma amiga e venha fazer parte desse momento especial conosco!\n\n🌷 Mulheres posicionadas, vidas transformadas e testemunhos que glorificam a Deus!\n\nEsperamos por você! ❤️\n\nCom carinho, esperamos você para essa noite inesquecível na presença do Senhor! 🙏🏻✨\n\n📝 Faça sua inscrição aqui 👇\nhttps://tinyurl.com/chademulheresrp";
+function montarConvite(c){
+  let t=CONVITE_BASE;
+  if(c&&c.tema) t=t.replace(/(🌸 Tema: ).*( 🌸)/,"$1"+c.tema.toUpperCase()+"$2");
+  if(c&&c.data){const [y,m,d]=c.data.split("-").map(Number); t=t.replace(/(📅 Data: ).*/,"$1"+d+" de "+MESES[m-1]+" de "+y);}
+  if(c&&c.hora) t=t.replace(/(⏰ Horário: ).*/,"$1Às "+c.hora);
+  if(c&&c.local) t=t.replace(/(📍 Local: ).*/,"$1"+c.local);
+  document.getElementById("b-zap").href="https://wa.me/?text="+encodeURIComponent(t);
+}
+montarConvite(null);
+document.getElementById("b-copiar").addEventListener("click",async()=>{
+  let ok=false;
+  try{await navigator.clipboard.writeText(LINK_INSC);ok=true;}catch(_){}
+  if(!ok){const r=document.createRange();r.selectNodeContents(document.getElementById("link-insc"));const sel=getSelection();sel.removeAllRanges();sel.addRange(r);try{ok=document.execCommand("copy");}catch(_){}}
+  const m=document.getElementById("link-ok"); m.textContent=ok?"Link copiado! ✅ É só colar na conversa.":"Segure o dedo no link acima para copiar."; m.hidden=false;
+  setTimeout(()=>m.hidden=true,4000);
+});
 try{mostrar(JSON.parse(localStorage.getItem("cha-config")||"null"));}catch(_){}
 atualizar(); setInterval(atualizar,60000);
 
