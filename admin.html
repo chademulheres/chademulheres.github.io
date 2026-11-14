@@ -137,6 +137,11 @@ textarea{min-height:70px;resize:vertical}
 .ins-folha th{background:#7A4554;color:#fff;text-align:left;padding:8px;font-weight:500;white-space:nowrap}
 .ins-folha td{padding:7px 8px;border-bottom:1px solid #ead9dc;vertical-align:top}
 .ins-folha tbody tr:nth-child(even) td{background:#f8eef0}
+.ins-add{margin:4px 0 18px;padding:14px 18px;border:1px solid rgba(180,160,210,.45);border-radius:20px;background:rgba(255,255,255,.6)}
+.ins-add summary{cursor:pointer;font-weight:600;color:#7A5FA0;font-size:16px}
+.ins-add form{max-width:460px}
+.ins-add .ins-aut{display:flex;gap:10px;align-items:flex-start;margin:14px 0 4px;font-weight:400;line-height:1.4}
+.ins-add .ins-aut input{width:20px;height:20px;flex:none;margin:1px 0 0;accent-color:#9474B8}
 @media print{
   @page{size:A4 landscape;margin:12mm}
   body{background:#fff!important}
@@ -386,6 +391,19 @@ input::placeholder,textarea::placeholder{color:rgba(75,63,92,.4)!important}
     <section class="box" data-aba="inscritas" id="s-inscritas">
       <h2>Inscritas</h2>
       <p class="sub">A lista completa da planilha (sem a autorização do WhatsApp). Para guardar, clique em <b>Salvar em PDF</b>.</p>
+      <details class="ins-add" id="ins-add">
+        <summary>➕ Adicionar inscrita</summary>
+        <p class="sub" style="margin:6px 0 10px">Para quem se inscreveu pessoalmente ou pelo telefone. Ela entra na lista do próximo Chá, igual a quem se inscreveu pelo site.</p>
+        <form id="f-ins">
+          <label for="ins-nome">Nome completo</label>
+          <input id="ins-nome" autocomplete="off" required>
+          <label for="ins-zap">WhatsApp com DDD</label>
+          <input id="ins-zap" type="tel" inputmode="tel" placeholder="(16) 99999-9999" autocomplete="off">
+          <label class="ins-aut"><input id="ins-autorizou" type="checkbox" checked> Ela autorizou receber as mensagens do Chá pelo WhatsApp</label>
+          <button class="btn" type="submit" style="width:auto;padding:12px 26px">Adicionar</button>
+          <div class="msg" id="m-ins-add"></div>
+        </form>
+      </details>
       <div class="ins-bar">
         <label for="ins-aba" style="margin:0">Qual Chá?</label>
         <select id="ins-aba"></select>
@@ -705,6 +723,22 @@ async function carregarInscritas(nomeAba) {
     t.appendChild(tb);
   } catch (e) { msg("m-ins", "Não consegui falar com a planilha. " + e.message, false); insCarregada = false; }
 }
+$("f-ins").addEventListener("submit", async e => {
+  e.preventDefault();
+  const b = e.target.querySelector("button"), nome = $("ins-nome").value.trim(), zap = $("ins-zap").value.trim();
+  if (!nome) return msg("m-ins-add", "Digite o nome.", false);
+  if (zap && zap.replace(/\D/g, "").length < 10) return msg("m-ins-add", "O WhatsApp precisa ter o DDD. Exemplo: (16) 99999-9999.", false);
+  b.disabled = true; b.textContent = "Adicionando...";
+  try {
+    const r = await pedir({ acao: "inscrever", nome, whatsapp: zap, autorizou: $("ins-autorizou").checked });
+    if (!r.ok) { msg("m-ins-add", r.erro, false); return; }
+    if (!r.nome) { msg("m-ins-add", "Ainda não deu: falta colar o robozinho novo na planilha (Implantar → Nova versão).", false); return; }
+    msg("m-ins-add", "✅ " + r.nome + " foi adicionada à lista!", true);
+    $("ins-nome").value = ""; $("ins-zap").value = ""; $("ins-autorizou").checked = true;
+    carregarInscritas("Inscrições");
+  } catch (err) { msg("m-ins-add", "Não consegui falar com a planilha. " + err.message, false); }
+  finally { b.disabled = false; b.textContent = "Adicionar"; }
+});
 $("ins-aba").addEventListener("change", e => carregarInscritas(e.target.value));
 $("ins-pdf").addEventListener("click", () => {
   const t = document.title; document.title = $("ins-tit").textContent.replace(/[\/:]/g, "-");
