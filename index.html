@@ -501,7 +501,7 @@ h2,.convbox .convh,.eyebrow,.k,.ag-item .k,.ag-item svg,.ag-item a,.vids-title,.
 .cor-next i{display:block;width:150px!important;height:70px!important;border-radius:18px!important;border:4px solid #fff!important;box-shadow:0 0 0 1px var(--line),0 8px 20px rgba(80,40,80,.18)!important}
 .cor-next b{font-family:var(--f-serif);font-size:18px;color:var(--ink)}
 .cor1 i{width:110px!important;height:54px!important;border-radius:14px!important}
-.agenda-box .igreja{display:block;text-align:left;font-weight:600;color:var(--lilas-tit,#9474B8);margin-bottom:2px}.agenda-box .igreja[hidden]{display:none}
+.ag-item[hidden]{display:none!important}
 </style>
 
 
@@ -613,10 +613,15 @@ h2,.convbox .convh,.eyebrow,.k,.ag-item .k,.ag-item svg,.ag-item a,.vids-title,.
         <span class="k">Quando</span>
         <span class="v"><span data-cfg="dataLonga">Sábado, 14 de novembro de 2026</span><br><span data-cfg="horaTxt">Às 19h30</span></span>
       </div>
+      <div class="ag-item" id="ag-igreja" hidden>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><path d="M12 2v4M10 4h4"/><path d="M6 21V11l6-5 6 5v10"/><path d="M3 21h18"/><path d="M10 21v-4a2 2 0 0 1 4 0v4"/></svg>
+        <span class="k">Igreja</span>
+        <span class="v" data-cfg="igreja"></span>
+      </div>
       <div class="ag-item">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 21s-7-6.3-7-12a7 7 0 0 1 14 0c0 5.7-7 12-7 12z"/><circle cx="12" cy="9" r="2.5"/></svg>
         <span class="k">Local</span>
-        <span class="v"><b class="igreja" data-cfg="igreja" hidden></b><span data-cfg="local">Av. Ettore e Aurora Coraucci, 2071 – Jd. Orestes Lopes de Camargo, Ribeirão Preto</span></span>
+        <span class="v" data-cfg="local">Av. Ettore e Aurora Coraucci, 2071 – Jd. Orestes Lopes de Camargo, Ribeirão Preto</span>
         <a data-cfg="mapa" href="https://www.google.com/maps/search/?api=1&query=Av.+Ettore+e+Aurora+Coraucci,+2071,+Ribeir%C3%A3o+Preto,+SP" target="_blank" rel="noopener">Abrir no mapa →</a>
       </div>
       <div class="ag-item">
@@ -974,7 +979,7 @@ function aplicarConfig(c){
   document.querySelectorAll("[data-cor]").forEach(e=>{e.hidden=!temCor;const i=e.querySelector("i");if(i&&temCor)i.style.background=c.cor;});
   set("corNome",c.corNome||nomeDaCor(c.cor));
   if(c.tema){set("tema",c.tema);}
-  document.querySelectorAll('[data-cfg="igreja"]').forEach(e=>{e.textContent=c.igreja||"";e.hidden=!c.igreja;});
+  set("igreja",c.igreja||""); const agI=document.getElementById("ag-igreja"); if(agI) agI.hidden=!c.igreja;
   if(c.local){set("local",c.local);document.querySelectorAll('[data-cfg="mapa"]').forEach(a=>{a.href="https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(c.local)});}
   if(c.hora) set("horaTxt","Às "+c.hora);
   if(!c.data){PROXIMO_CHA="";document.body.classList.add("sem-cha");return;}
