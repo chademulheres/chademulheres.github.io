@@ -733,7 +733,7 @@ $("f-ins").addEventListener("submit", async e => {
     const r = await pedir({ acao: "inscrever", nome, whatsapp: zap, autorizou: $("ins-autorizou").checked });
     if (!r.ok) { msg("m-ins-add", r.erro, false); return; }
     if (!r.nome) { msg("m-ins-add", "Ainda não deu: falta colar o robozinho novo na planilha (Implantar → Nova versão).", false); return; }
-    msg("m-ins-add", "✅ " + r.nome + " foi adicionada à lista!", true);
+    msg("m-ins-add", r.msg || ("✅ " + r.nome + " foi adicionada à lista!"), true);
     $("ins-nome").value = ""; $("ins-zap").value = ""; $("ins-autorizou").checked = true;
     carregarInscritas("Inscrições");
   } catch (err) { msg("m-ins-add", "Não consegui falar com a planilha. " + err.message, false); }
