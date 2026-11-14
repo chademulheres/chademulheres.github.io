@@ -501,6 +501,7 @@ h2,.convbox .convh,.eyebrow,.k,.ag-item .k,.ag-item svg,.ag-item a,.vids-title,.
 .cor-next i{display:block;width:150px!important;height:70px!important;border-radius:18px!important;border:4px solid #fff!important;box-shadow:0 0 0 1px var(--line),0 8px 20px rgba(80,40,80,.18)!important}
 .cor-next b{font-family:var(--f-serif);font-size:18px;color:var(--ink)}
 .cor1 i{width:110px!important;height:54px!important;border-radius:14px!important}
+.agenda-box .igreja{display:block;text-align:left;font-weight:600;color:var(--lilas-tit,#9474B8);margin-bottom:2px}.agenda-box .igreja[hidden]{display:none}
 </style>
 
 
@@ -615,7 +616,7 @@ h2,.convbox .convh,.eyebrow,.k,.ag-item .k,.ag-item svg,.ag-item a,.vids-title,.
       <div class="ag-item">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 21s-7-6.3-7-12a7 7 0 0 1 14 0c0 5.7-7 12-7 12z"/><circle cx="12" cy="9" r="2.5"/></svg>
         <span class="k">Local</span>
-        <span class="v" data-cfg="local">Av. Ettore e Aurora Coraucci, 2071 – Jd. Orestes Lopes de Camargo, Ribeirão Preto</span>
+        <span class="v"><b class="igreja" data-cfg="igreja" hidden></b><span data-cfg="local">Av. Ettore e Aurora Coraucci, 2071 – Jd. Orestes Lopes de Camargo, Ribeirão Preto</span></span>
         <a data-cfg="mapa" href="https://www.google.com/maps/search/?api=1&query=Av.+Ettore+e+Aurora+Coraucci,+2071,+Ribeir%C3%A3o+Preto,+SP" target="_blank" rel="noopener">Abrir no mapa →</a>
       </div>
       <div class="ag-item">
@@ -871,7 +872,7 @@ function eventoGoogle(c){
   const m=String(c.hora||"").match(/(\d{1,2})\D*(\d{2})?/), hh=m?m[1].padStart(2,"0"):"19", mm=m&&m[2]?m[2]:"00";
   const ev={"@context":"https://schema.org","@type":"Event","name":"Chá de Mulheres – "+(c.tema||"Gerando Testemunho"),
     "startDate":c.data+"T"+hh+":"+mm+":00-03:00","eventStatus":"https://schema.org/EventScheduled","eventAttendanceMode":"https://schema.org/OfflineEventAttendanceMode",
-    "location":{"@type":"Place","name":"Chá de Mulheres","address":{"@type":"PostalAddress","streetAddress":c.local||"","addressLocality":"Ribeirão Preto","addressRegion":"SP","addressCountry":"BR"}},
+    "location":{"@type":"Place","name":c.igreja||"Chá de Mulheres","address":{"@type":"PostalAddress","streetAddress":c.local||"","addressLocality":"Ribeirão Preto","addressRegion":"SP","addressCountry":"BR"}},
     "image":["https://chademulheres.github.io/img/hero.jpg"],"description":"Encontro cristão para mulheres em Ribeirão Preto"+(c.tema?" com o tema "+c.tema:"")+".",
     "organizer":{"@type":"Organization","name":"Chá de Mulheres – Gerando Testemunho","url":"https://chademulheres.github.io/"},
     "offers":{"@type":"Offer","url":"https://tinyurl.com/chademulheresrp","price":"0","priceCurrency":"BRL","availability":"https://schema.org/InStock"}};
@@ -973,6 +974,7 @@ function aplicarConfig(c){
   document.querySelectorAll("[data-cor]").forEach(e=>{e.hidden=!temCor;const i=e.querySelector("i");if(i&&temCor)i.style.background=c.cor;});
   set("corNome",c.corNome||nomeDaCor(c.cor));
   if(c.tema){set("tema",c.tema);}
+  document.querySelectorAll('[data-cfg="igreja"]').forEach(e=>{e.textContent=c.igreja||"";e.hidden=!c.igreja;});
   if(c.local){set("local",c.local);document.querySelectorAll('[data-cfg="mapa"]').forEach(a=>{a.href="https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(c.local)});}
   if(c.hora) set("horaTxt","Às "+c.hora);
   if(!c.data){PROXIMO_CHA="";document.body.classList.add("sem-cha");return;}
@@ -992,7 +994,7 @@ function aplicarConfig(c){
     if(c.tema) t=t.replace(/(🌸 Tema: ).*( 🌸)/,"$1"+c.tema.toUpperCase()+"$2");
     t=t.replace(/(📅 Data: ).*/,"$1"+d+" de "+MESES[m-1]+" de "+y);
     if(c.hora) t=t.replace(/(⏰ Horário: ).*/,"$1Às "+c.hora);
-    if(c.local) t=t.replace(/(📍 Local: ).*/,"$1"+c.local);
+    if(c.local) t=t.replace(/(📍 Local: ).*/,"$1"+(c.igreja?c.igreja+" – ":"")+c.local);
     t=t.replace(/\n👗 (Paleta de )?[Cc]or do Chá: .*/,"");
     {const cn=c.corNome||nomeDaCor(c.cor); if(cn) t=t.replace(/(📍 Local: .*)/,"$1\n👗 Paleta de cor do Chá: "+cn);}
     wa.href="https://wa.me/?text="+encodeURIComponent(t);}

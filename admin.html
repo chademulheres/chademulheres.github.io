@@ -285,6 +285,8 @@ input::placeholder,textarea::placeholder{color:rgba(75,63,92,.4)!important}
           <input id="hora" type="text" placeholder="19h30"></div>
         </div>
         <div class="dica">Deixe a data em branco se ainda não tiver: o site mostra "Em breve, um novo Chá!".</div>
+        <label for="igreja">Nome da igreja ou do lugar <small style="font-weight:400;color:#8E84A0">(opcional)</small></label>
+        <input id="igreja" type="text" placeholder="Pode deixar em branco" maxlength="80">
         <label for="local">Endereço</label>
         <textarea id="local" placeholder="Rua, número – bairro, cidade"></textarea>
         <label for="tema">Tema</label>
@@ -472,7 +474,7 @@ async function pedir(dados) {
 function preencher(p) {
   const c = p.config;
   corTema(c.cor);
-  $("data").value = c.data; $("hora").value = c.hora; $("local").value = c.local; $("tema").value = c.tema;
+  $("data").value = c.data; $("hora").value = c.hora; $("local").value = c.local; $("igreja").value = c.igreja || ""; $("tema").value = c.tema;
   marcarCor(c.cor || "#7A4554"); $("cor-nome").value = c.corNome || "";
   $("n-aviso").textContent = p.aviso + (p.aviso === 1 ? " mulher" : " mulheres");
   $("n-lembrete").textContent = p.lembrete + (p.lembrete === 1 ? " mulher" : " mulheres");
@@ -558,7 +560,7 @@ $("f-cha").addEventListener("submit", async e => {
   e.preventDefault();
   const btn = e.target.querySelector("button[type=submit]"); btn.disabled = true; btn.textContent = "Salvando...";
   try {
-    const r = await pedir({ acao: "salvar", data: $("data").value, hora: $("hora").value, local: $("local").value, tema: $("tema").value, cor: $("cor").value, corNome: $("cor-nome").value.trim() });
+    const r = await pedir({ acao: "salvar", data: $("data").value, hora: $("hora").value, local: $("local").value, igreja: $("igreja").value.trim(), tema: $("tema").value, cor: $("cor").value, corNome: $("cor-nome").value.trim() });
     if (r.ok) { preencher(r.painel); msg("m-cha", "Salvo! ✅ O site já mostra os dados novos (pode levar 1 minuto).", true); }
     else msg("m-cha", r.erro, false);
   } catch (e) { msg("m-cha", "Não consegui salvar. " + e.message, false); }
