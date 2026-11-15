@@ -502,6 +502,30 @@ h2,.convbox .convh,.eyebrow,.k,.ag-item .k,.ag-item svg,.ag-item a,.vids-title,.
 .cor-next b{font-family:var(--f-serif);font-size:18px;color:var(--ink)}
 .cor1 i{width:110px!important;height:54px!important;border-radius:14px!important}
 .ag-item[hidden]{display:none!important}
+
+/* Página de cada Chá: um vídeo grande por vez (setas) e fotos que abrem grandes */
+.vcar{position:relative;max-width:640px;margin:30px auto 0;display:flex;flex-direction:column;align-items:center}
+.vcar .vids.vcar-vids{display:block !important;margin-top:0;width:min(100%,460px,calc(78vh * 9 / 16))}
+.vcar .vids figure{display:none !important}
+.vcar .vids figure.on{display:flex !important}
+.vcar .vids .vbox{aspect-ratio:9/16 !important}
+.vcar .vids figcaption{text-align:center;font-size:15px}
+.vc-seta{position:absolute;top:45%;transform:translateY(-50%);z-index:5;width:54px;height:54px;border-radius:50%;border:0;cursor:pointer;font:400 40px/1 Georgia,serif;color:#fff;background:linear-gradient(135deg,#A88BC9,#D7A6C4);box-shadow:0 8px 22px rgba(120,90,160,.35);display:flex;align-items:center;justify-content:center;padding-bottom:4px}
+.vc-ant{left:0}.vc-prox{right:0}
+.vc-seta:hover{filter:brightness(1.08)}
+.vc-cont{margin-top:10px;font-family:var(--f-sans);font-size:13px;color:var(--muted);letter-spacing:.08em}
+@media(max-width:640px){.vc-seta{width:44px;height:44px;font-size:32px}.vc-ant{left:-6px}.vc-prox{right:-6px}.vcar .vids.vcar-vids{width:min(78%,calc(72vh * 9 / 16))}}
+.galeria .grid img{cursor:zoom-in}
+#lb{position:fixed;inset:0;z-index:9999;background:rgba(28,16,40,.94);display:none;align-items:center;justify-content:center;touch-action:pan-y}
+#lb.on{display:flex}
+#lb img{max-width:94vw;max-height:86vh;border-radius:10px;box-shadow:0 20px 60px rgba(0,0,0,.5);object-fit:contain}
+#lb button{position:absolute;border:0;cursor:pointer;color:#fff;background:rgba(255,255,255,.14);border-radius:50%;width:54px;height:54px;font:400 38px/1 Georgia,serif;display:flex;align-items:center;justify-content:center;padding-bottom:4px}
+#lb button:hover{background:rgba(255,255,255,.28)}
+#lb .lb-x{top:16px;right:16px;font-size:30px}
+#lb .lb-ant{left:14px;top:50%;transform:translateY(-50%)}
+#lb .lb-prox{right:14px;top:50%;transform:translateY(-50%)}
+#lb .lb-n{position:absolute;bottom:18px;left:0;right:0;text-align:center;color:#eee;font:500 14px var(--f-sans);letter-spacing:.08em}
+@media(max-width:640px){#lb button{width:44px;height:44px;font-size:30px}#lb .lb-ant{left:6px}#lb .lb-prox{right:6px}}
 </style>
 
 
@@ -874,7 +898,7 @@ function renderGaleria(g,proxima){
     d.innerHTML='<section class="pg galeria"><div class="in"><a class="back" href="#galeria" data-page="galeria"><span aria-hidden="true">←</span> Voltar à galeria</a>'+
       '<div class="eyebrow">'+dataPontos(e.data)+(e.tema?' · Tema: '+esc(e.tema):'')+'</div><h2>'+esc(e.titulo||"Chá de Mulheres")+'</h2>'+
       (e.descricao?'<p class="sub">'+esc(e.descricao)+'</p>':'')+
-      (e.videos.length?'<div class="sec-tit"><span>🎬 Vídeos</span></div><div class="vids light m-'+esc(e.moldura||"rosas")+'">'+e.videos.map(videoHTML).join("")+'</div>':'')+
+      (e.videos.length?'<div class="sec-tit"><span>🎬 Vídeos</span></div><div class="vcar"><button class="vc-seta vc-ant" type="button" aria-label="Vídeo anterior">‹</button><div class="vids light vcar-vids m-'+esc(e.moldura||"rosas")+'">'+e.videos.map((v,i)=>videoHTML(v).replace('<figure>','<figure'+(i?'':' class="on"')+'>')).join("")+'</div><button class="vc-seta vc-prox" type="button" aria-label="Próximo vídeo">›</button><div class="vc-cont"><span class="vc-n">1</span> de '+e.videos.length+'</div></div>':'')+
       (e.fotos.length?'<div class="sec-tit"><span>📷 Fotos</span></div><div class="grid">'+e.fotos.map(f=>'<figure><img src="'+esc(f)+'" alt="Foto do Chá de Mulheres" loading="lazy"></figure>').join("")+'</div>':'')+
       '</div></section>';
     antes.parentNode.insertBefore(d,antes);});
@@ -1063,4 +1087,29 @@ document.getElementById("v-prev").onclick=()=>{vOff--;renderV()};document.getEle
 renderV();
 </script>
 
+
+<div id="lb" role="dialog" aria-label="Foto ampliada"><img alt="Foto do Chá"><button class="lb-x" type="button" aria-label="Fechar">✕</button><button class="lb-ant" type="button" aria-label="Foto anterior">‹</button><button class="lb-prox" type="button" aria-label="Próxima foto">›</button><div class="lb-n"></div></div>
+<script>
+/* Vídeos em carrossel e fotos ampliadas nas páginas de cada Chá */
+(function(){
+  document.addEventListener("click",ev=>{
+    const seta=ev.target.closest(".vc-seta");
+    if(seta){const car=seta.closest(".vcar"),fs=[...car.querySelectorAll(".vcar-vids figure")];let i=fs.findIndex(f=>f.classList.contains("on"));
+      fs[i].querySelectorAll("video").forEach(v=>v.pause());fs[i].classList.remove("on");
+      i=(i+(seta.classList.contains("vc-prox")?1:-1)+fs.length)%fs.length;fs[i].classList.add("on");car.querySelector(".vc-n").textContent=i+1;return;}
+    const img=ev.target.closest(".galeria .grid img");
+    if(img){abrir([...img.closest(".grid").querySelectorAll("img")],img);}
+  });
+  const lb=document.getElementById("lb"),li=lb.querySelector("img"),ln=lb.querySelector(".lb-n");let lista=[],pos=0;
+  function mostra(){li.src=lista[pos].src;ln.textContent=(pos+1)+" de "+lista.length;}
+  function abrir(l,img){lista=l;pos=l.indexOf(img);mostra();lb.classList.add("on");document.body.style.overflow="hidden";}
+  function fecha(){lb.classList.remove("on");document.body.style.overflow="";li.removeAttribute("src");}
+  function anda(d){pos=(pos+d+lista.length)%lista.length;mostra();}
+  lb.querySelector(".lb-x").onclick=fecha; lb.querySelector(".lb-ant").onclick=e=>{e.stopPropagation();anda(-1)}; lb.querySelector(".lb-prox").onclick=e=>{e.stopPropagation();anda(1)};
+  lb.addEventListener("click",e=>{if(e.target===lb)fecha();});
+  document.addEventListener("keydown",e=>{if(!lb.classList.contains("on"))return;if(e.key==="Escape")fecha();if(e.key==="ArrowRight")anda(1);if(e.key==="ArrowLeft")anda(-1);});
+  let x0=null;lb.addEventListener("touchstart",e=>{x0=e.touches[0].clientX},{passive:true});
+  lb.addEventListener("touchend",e=>{if(x0===null)return;const dx=e.changedTouches[0].clientX-x0;if(Math.abs(dx)>50)anda(dx<0?1:-1);x0=null;});
+})();
+</script>
 </body></html>
