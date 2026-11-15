@@ -526,6 +526,12 @@ h2,.convbox .convh,.eyebrow,.k,.ag-item .k,.ag-item svg,.ag-item a,.vids-title,.
 #lb .lb-prox{right:14px;top:50%;transform:translateY(-50%)}
 #lb .lb-n{position:absolute;bottom:18px;left:0;right:0;text-align:center;color:#eee;font:500 14px var(--f-sans);letter-spacing:.08em}
 @media(max-width:640px){#lb button{width:44px;height:44px;font-size:30px}#lb .lb-ant{left:6px}#lb .lb-prox{right:6px}}
+
+/* Galeria: nome da igreja em destaque, data menor */
+.ed b.nome{display:block;font-size:22px;line-height:1.25;color:var(--lilas-tit,#9474B8)}
+.ed .d2{display:block;font-family:var(--f-sans);font-size:13px;color:var(--muted);margin:4px 0 2px;letter-spacing:.04em}
+#gal-sub a b.sub-nome{display:block;font-weight:500;font-size:14px}
+#gal-sub a small{font-size:11px;opacity:.75}
 </style>
 
 
@@ -880,6 +886,7 @@ function juntarExtra(g){
     (x.fotos||[]).forEach(f=>{if(!e.fotos.includes(f)) e.fotos.push(f);});});
   return g.sort((a,b)=>b.data.localeCompare(a.data));
 }
+const nomeCha=e=>String(e.titulo||e.tema||"Chá de Mulheres").replace(/\s*·\s*\d{2}\/\d{2}\/\d{4}$/,"");
 function renderGaleria(g,proxima){
   g=juntarExtra(g);
   videosInicio(g);
@@ -888,15 +895,15 @@ function renderGaleria(g,proxima){
   eds.innerHTML=g.map(e=>{const capa=e.capa||e.fotos[0]||"";
     const nv=e.videos.length,nf=e.fotos.length;
     const cont=[nv?nv+(nv===1?" vídeo":" vídeos"):"",nf?nf+(nf===1?" foto":" fotos"):""].filter(Boolean).join(" · ")||"Em breve, fotos";
-    return '<a class="ed" href="#cha-'+esc(e.id)+'" data-page="cha-'+esc(e.id)+'">'+(capa?'<img src="'+esc(capa)+'" alt="" loading="lazy">':'')+'<div><span class="d">'+dataPontos(e.data)+'</span><b>'+esc(e.titulo||e.tema||"Chá de Mulheres")+'</b><span>'+(e.tema&&e.titulo?esc(e.tema)+' · ':'')+cont+'</span></div></a>';}).join("");
+    return '<a class="ed" href="#cha-'+esc(e.id)+'" data-page="cha-'+esc(e.id)+'">'+(capa?'<img src="'+esc(capa)+'" alt="" loading="lazy">':'')+'<div><b class="nome">'+esc(nomeCha(e))+'</b><span class="d2">'+dataBarras(e.data)+(e.tema&&e.titulo?' · '+esc(e.tema):'')+'</span><span>'+cont+'</span></div></a>';}).join("");
   if(soon&&!g.some(e=>e.data===proxima)) eds.appendChild(soon);
   const sub=document.getElementById("gal-sub");
-  if(sub) sub.innerHTML='<a href="#galeria" data-page="galeria">Ver todos os Chás</a>'+g.map(e=>'<a href="#cha-'+esc(e.id)+'" data-page="cha-'+esc(e.id)+'">'+dataBarras(e.data)+'<small>'+esc((e.titulo||e.tema||"").replace(/ · \d{2}\/\d{2}\/\d{4}$/,""))+'</small></a>').join("");
+  if(sub) sub.innerHTML='<a href="#galeria" data-page="galeria">Ver todos os Chás</a>'+g.map(e=>'<a href="#cha-'+esc(e.id)+'" data-page="cha-'+esc(e.id)+'">'+'<b class="sub-nome">'+esc(nomeCha(e))+'</b><small>'+dataBarras(e.data)+'</small></a>').join("");
   document.querySelectorAll('.page[id^="p-cha-"]').forEach(x=>x.remove());
   const antes=document.getElementById("p-convide");
   g.forEach(e=>{const d=document.createElement("div"); d.className="page"; d.id="p-cha-"+e.id;
     d.innerHTML='<section class="pg galeria"><div class="in"><a class="back" href="#galeria" data-page="galeria"><span aria-hidden="true">←</span> Voltar à galeria</a>'+
-      '<div class="eyebrow">'+dataPontos(e.data)+(e.tema?' · Tema: '+esc(e.tema):'')+'</div><h2>'+esc(e.titulo||"Chá de Mulheres")+'</h2>'+
+      '<div class="eyebrow">'+dataPontos(e.data)+(e.tema?' · Tema: '+esc(e.tema):'')+'</div><h2>'+esc(nomeCha(e))+'</h2>'+
       (e.descricao?'<p class="sub">'+esc(e.descricao)+'</p>':'')+
       (e.videos.length?'<div class="sec-tit"><span>🎬 Vídeos</span></div><div class="vcar"><button class="vc-seta vc-ant" type="button" aria-label="Vídeo anterior">‹</button><div class="vids light vcar-vids m-'+esc(e.moldura||"rosas")+'">'+e.videos.map((v,i)=>videoHTML(v).replace('<figure>','<figure'+(i?'':' class="on"')+'>')).join("")+'</div><button class="vc-seta vc-prox" type="button" aria-label="Próximo vídeo">›</button><div class="vc-cont"><span class="vc-n">1</span> de '+e.videos.length+'</div></div>':'')+
       (e.fotos.length?'<div class="sec-tit"><span>📷 Fotos</span></div><div class="grid">'+e.fotos.map(f=>'<figure><img src="'+esc(f)+'" alt="Foto do Chá de Mulheres" loading="lazy"></figure>').join("")+'</div>':'')+
