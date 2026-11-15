@@ -540,6 +540,11 @@ h2,.convbox .convh,.eyebrow,.k,.ag-item .k,.ag-item svg,.ag-item a,.vids-title,.
 .ultimo-cha{margin:0 auto 26px;text-align:center}
 .ultimo-cha .vids-title{margin-top:10px}
 .vcar-home{margin-top:16px}
+
+.baixar-dica{text-align:center;font-family:var(--f-sans);font-size:14px;color:var(--muted);margin:14px 0 0}
+.baixar-dica .baixar-todas{display:inline-flex;margin:10px auto 0;padding:10px 22px;font-size:14px}
+#lb .lb-baixar{position:absolute;top:18px;left:50%;transform:translateX(-50%);background:linear-gradient(90deg,#A88BC9,#D7A6C4);color:#fff;text-decoration:none;font:600 15px var(--f-sans);padding:11px 22px;border-radius:999px;box-shadow:0 8px 22px rgba(0,0,0,.3)}
+@media(max-width:640px){#lb .lb-baixar{top:auto;bottom:46px}}
 </style>
 
 
@@ -892,7 +897,7 @@ function juntarExtra(g){
   extra.forEach(x=>{let e=g.find(y=>y.data===x.data);
     if(!e){e={id:x.id||x.data,data:x.data,tema:"",titulo:"",descricao:"",capa:"",fotos:[],videos:[],moldura:""};g.push(e);}
     if(x.titulo&&(!e.titulo||/^Chá de Mulheres de /i.test(e.titulo))) e.titulo=x.titulo;
-    ["tema","descricao","capa","moldura"].forEach(k=>{if(x[k]&&!e[k]) e[k]=x[k];});
+    ["tema","descricao","capa","moldura","zip"].forEach(k=>{if(x[k]&&!e[k]) e[k]=x[k];});
     (x.videos||[]).forEach(v=>{if(!e.videos.some(w=>w.url===v.url)) e.videos.push(v);});
     (x.fotos||[]).forEach(f=>{if(!e.fotos.includes(f)) e.fotos.push(f);});});
   return g.sort((a,b)=>b.data.localeCompare(a.data));
@@ -917,7 +922,7 @@ function renderGaleria(g,proxima){
       '<div class="eyebrow">'+dataPontos(e.data)+(e.tema?' · Tema: '+esc(e.tema):'')+'</div><h2>'+esc(nomeCha(e))+'</h2>'+
       (e.descricao?'<p class="sub">'+esc(e.descricao)+'</p>':'')+
       (e.videos.length?'<div class="sec-tit"><span>🎬 Vídeos</span></div><div class="vcar"><button class="vc-seta vc-ant" type="button" aria-label="Vídeo anterior">‹</button><div class="vids light vcar-vids m-'+esc(e.moldura||"rosas")+'">'+e.videos.map((v,i)=>videoHTML(v).replace('<figure>','<figure'+(i?'':' class="on"')+'>')).join("")+'</div><button class="vc-seta vc-prox" type="button" aria-label="Próximo vídeo">›</button><div class="vc-cont"><span class="vc-n">1</span> de '+e.videos.length+'</div></div>':'')+
-      (e.fotos.length?'<div class="sec-tit"><span>📷 Fotos</span></div><div class="grid">'+e.fotos.map(f=>'<figure><img src="'+esc(f)+'" alt="Foto do Chá de Mulheres" loading="lazy"></figure>').join("")+'</div>':'')+
+      (e.fotos.length?'<div class="sec-tit"><span>📷 Fotos</span></div><p class="baixar-dica">Toque numa foto para ver grande e baixar.'+(e.zip?' <a class="btn baixar-todas" href="'+esc(e.zip)+'" download>⬇ Baixar todas as fotos</a>':'')+'</p><div class="grid">'+e.fotos.map(f=>'<figure><img src="'+esc(f)+'" alt="Foto do Chá de Mulheres" loading="lazy"></figure>').join("")+'</div>':'')+
       '</div></section>';
     antes.parentNode.insertBefore(d,antes);});
   if((location.hash||"").startsWith("#cha-")) setTimeout(show,0);
@@ -1106,7 +1111,7 @@ renderV();
 </script>
 
 
-<div id="lb" role="dialog" aria-label="Foto ampliada"><img alt="Foto do Chá"><button class="lb-x" type="button" aria-label="Fechar">✕</button><button class="lb-ant" type="button" aria-label="Foto anterior">‹</button><button class="lb-prox" type="button" aria-label="Próxima foto">›</button><div class="lb-n"></div></div>
+<div id="lb" role="dialog" aria-label="Foto ampliada"><img alt="Foto do Chá"><button class="lb-x" type="button" aria-label="Fechar">✕</button><a class="lb-baixar" download>⬇ Baixar foto</a><button class="lb-ant" type="button" aria-label="Foto anterior">‹</button><button class="lb-prox" type="button" aria-label="Próxima foto">›</button><div class="lb-n"></div></div>
 <script>
 /* Vídeos em carrossel e fotos ampliadas nas páginas de cada Chá */
 (function(){
@@ -1119,7 +1124,8 @@ renderV();
     if(img){abrir([...img.closest(".grid").querySelectorAll("img")],img);}
   });
   const lb=document.getElementById("lb"),li=lb.querySelector("img"),ln=lb.querySelector(".lb-n");let lista=[],pos=0;
-  function mostra(){li.src=lista[pos].src;ln.textContent=(pos+1)+" de "+lista.length;}
+  const lbb=lb.querySelector(".lb-baixar");
+  function mostra(){li.src=lista[pos].src;ln.textContent=(pos+1)+" de "+lista.length;lbb.href=lista[pos].src;lbb.setAttribute("download","cha-de-mulheres-"+(pos+1)+".jpg");}
   function abrir(l,img){lista=l;pos=l.indexOf(img);mostra();lb.classList.add("on");document.body.style.overflow="hidden";}
   function fecha(){lb.classList.remove("on");document.body.style.overflow="";li.removeAttribute("src");}
   function anda(d){pos=(pos+d+lista.length)%lista.length;mostra();}
