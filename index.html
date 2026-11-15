@@ -535,6 +535,11 @@ h2,.convbox .convh,.eyebrow,.k,.ag-item .k,.ag-item svg,.ag-item a,.vids-title,.
 
 /* 15/11: a dona não quer a avaliação como primeira coisa do site */
 .aval-destaque{display:none !important}
+
+/* Início: "Veja como foi o último Chá" logo depois do logo, vídeo grande com setas */
+.ultimo-cha{margin:0 auto 26px;text-align:center}
+.ultimo-cha .vids-title{margin-top:10px}
+.vcar-home{margin-top:16px}
 </style>
 
 
@@ -579,6 +584,13 @@ h2,.convbox .convh,.eyebrow,.k,.ag-item .k,.ag-item svg,.ag-item a,.vids-title,.
 <div class="page" id="p-inicio"><section class="hero"><div class="floral2" aria-hidden="true"></div>
   <div class="in">
     <h1 class="logo"><picture><source media="(min-width:700px)" srcset="img/logo-horizontal.png"><img src="img/logo-horizontal.png" alt="Chá de Mulheres – Gerando Testemunho, Ribeirão Preto" width="900" height="745"></picture></h1>
+    <div class="ultimo-cha">
+      <div class="vids-title" id="vids-home-tit">Veja como foi o último Chá · 29/08</div>
+    <div class="vcar vcar-home"><button class="vc-seta vc-ant" type="button" aria-label="Vídeo anterior">‹</button><div class="vids dark vcar-vids" id="vids-home">
+      <figure class="on"><div class="vbox" style="--poster:url(vid/video1.jpg)"><video src="vid/video1.mp4" poster="vid/video1.jpg" controls playsinline autoplay muted preload="auto"></video></div><figcaption>Louvor e adoração</figcaption></figure>
+      <figure><div class="vbox" style="--poster:url(vid/video2.jpg)"><video src="vid/video2.mp4" poster="vid/video2.jpg" controls playsinline muted preload="auto"></video></div><figcaption>Momentos do Chá</figcaption></figure>
+    </div><button class="vc-seta vc-prox" type="button" aria-label="Próximo vídeo">›</button><div class="vc-cont"><span class="vc-n">1</span> de <span class="vc-t">2</span></div></div>
+    </div>
     <a class="aval-destaque" href="#avaliacoes" data-page="avaliacoes">
       <span class="ad-st">★★★★★</span>
       <span class="ad-tit">Avaliações do Chá</span>
@@ -629,11 +641,6 @@ h2,.convbox .convh,.eyebrow,.k,.ag-item .k,.ag-item svg,.ag-item a,.vids-title,.
     </div>
 
 
-    <div class="vids-title" id="vids-home-tit">Veja como foi o último Chá · 29/08</div>
-    <div class="vids dark" id="vids-home">
-      <figure><div class="vbox" style="--poster:url(vid/video1.jpg)"><video src="vid/video1.mp4" poster="vid/video1.jpg" controls playsinline autoplay muted preload="auto"></video></div><figcaption>Louvor e adoração</figcaption></figure>
-      <figure><div class="vbox" style="--poster:url(vid/video2.jpg)"><video src="vid/video2.mp4" poster="vid/video2.jpg" controls playsinline muted preload="auto"></video></div><figcaption>Momentos do Chá</figcaption></figure>
-    </div>
   </div>
 </section>
 <section class="pg info agenda-in only-com-cha" id="agenda">
@@ -861,7 +868,7 @@ function videoHTML(v){
 function ligarVideos(box){if(box.dataset.ligado===box.innerHTML.length+"")return;box.dataset.ligado=box.innerHTML.length;const vs=[...box.querySelectorAll("video")];
   vs.forEach((v,i)=>{v.loop=false;
     v.addEventListener("play",()=>vs.forEach(o=>{if(o!==v)o.pause()}));
-    v.addEventListener("ended",()=>{const n=vs[(i+1)%vs.length];n.currentTime=0;n.muted=v.muted;n.play().catch(()=>{});});});}
+    v.addEventListener("ended",()=>{const n=vs[(i+1)%vs.length];const fa=v.closest("figure"),fn=n.closest("figure");if(box.classList.contains("vcar-vids")&&fa&&fn){fa.classList.remove("on");fn.classList.add("on");const c=box.closest(".vcar");if(c)c.querySelector(".vc-n").textContent=(i+1)%vs.length+1;}n.currentTime=0;n.muted=v.muted;n.play().catch(()=>{});});});}
 function videosInicio(g){
   const box=document.getElementById("vids-home"), tit=document.getElementById("vids-home-tit"); if(!box||!tit) return;
   const hoje=new Date(); const h=hoje.getFullYear()+"-"+String(hoje.getMonth()+1).padStart(2,"0")+"-"+String(hoje.getDate()).padStart(2,"0");
@@ -870,10 +877,11 @@ function videosInicio(g){
   const chave=e.id+"|"+e.moldura+"|"+e.videos.map(v=>v.url).join(",");
   if(box.dataset.chave===chave) return;
   const atuais=[...box.querySelectorAll("video")].map(v=>v.getAttribute("src"));
-  box.dataset.chave=chave; box.className="vids dark m-"+(e.moldura||"rosas");
+  box.dataset.chave=chave; box.className="vids dark vcar-vids m-"+(e.moldura||"rosas");
   // os vídeos que já estão na página (Chá de agosto) não são recarregados
   if(atuais.length===e.videos.length&&e.videos.every((v,i)=>String(v.url).endsWith(atuais[i]))) return;
-  box.innerHTML=e.videos.map(videoHTML).join("");
+  box.innerHTML=e.videos.map((v,i)=>videoHTML(v).replace("<figure>","<figure"+(i?"":" class=\"on\"")+">")).join("");
+  const car=box.closest(".vcar"); if(car){car.querySelector(".vc-n").textContent="1";car.querySelector(".vc-t").textContent=e.videos.length;}
   const v1=box.querySelector("video"); if(v1){v1.muted=true;v1.autoplay=true;v1.preload="auto";}
   ligarVideos(box);
   if((location.hash||"#inicio")==="#inicio"&&typeof playHome==="function") playHome();
