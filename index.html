@@ -788,6 +788,7 @@ h2,.convbox .convh,.eyebrow,.k,.ag-item .k,.ag-item svg,.ag-item a,.vids-title,.
 </main>
 
 <script src="config.js"></script>
+<script src="galeria-extra.js"></script>
 <script>
 /* Próximo chá: depois dessa data, o site mostra "Em breve, um novo Chá!" sozinho */
 let PROXIMO_CHA="2026-11-14T22:00:00-03:00";
@@ -844,17 +845,29 @@ function videosInicio(g){
   ligarVideos(box);
   if((location.hash||"#inicio")==="#inicio"&&typeof playHome==="function") playHome();
 }
+function juntarExtra(g){
+  const extra=Array.isArray(window.GALERIA_EXTRA)?window.GALERIA_EXTRA:[];
+  g=g.map(e=>Object.assign({},e,{fotos:(e.fotos||[]).slice(),videos:(e.videos||[]).slice()}));
+  extra.forEach(x=>{let e=g.find(y=>y.data===x.data);
+    if(!e){e={id:x.id||x.data,data:x.data,tema:"",titulo:"",descricao:"",capa:"",fotos:[],videos:[],moldura:""};g.push(e);}
+    if(x.titulo&&(!e.titulo||/^Chá de Mulheres de /i.test(e.titulo))) e.titulo=x.titulo;
+    ["tema","descricao","capa","moldura"].forEach(k=>{if(x[k]&&!e[k]) e[k]=x[k];});
+    (x.videos||[]).forEach(v=>{if(!e.videos.some(w=>w.url===v.url)) e.videos.push(v);});
+    (x.fotos||[]).forEach(f=>{if(!e.fotos.includes(f)) e.fotos.push(f);});});
+  return g.sort((a,b)=>b.data.localeCompare(a.data));
+}
 function renderGaleria(g,proxima){
+  g=juntarExtra(g);
   videosInicio(g);
   const eds=document.querySelector("#p-galeria .eds"); if(!eds) return;
   const soon=eds.querySelector(".ed.soon");
   eds.innerHTML=g.map(e=>{const capa=e.capa||e.fotos[0]||"";
     const nv=e.videos.length,nf=e.fotos.length;
     const cont=[nv?nv+(nv===1?" vídeo":" vídeos"):"",nf?nf+(nf===1?" foto":" fotos"):""].filter(Boolean).join(" · ")||"Em breve, fotos";
-    return '<a class="ed" href="#cha-'+esc(e.id)+'" data-page="cha-'+esc(e.id)+'">'+(capa?'<img src="'+esc(capa)+'" alt="" loading="lazy">':'')+'<div><span class="d">'+dataPontos(e.data)+'</span><b>'+esc(e.tema||e.titulo||"Chá de Mulheres")+'</b><span>'+cont+'</span></div></a>';}).join("");
+    return '<a class="ed" href="#cha-'+esc(e.id)+'" data-page="cha-'+esc(e.id)+'">'+(capa?'<img src="'+esc(capa)+'" alt="" loading="lazy">':'')+'<div><span class="d">'+dataPontos(e.data)+'</span><b>'+esc(e.titulo||e.tema||"Chá de Mulheres")+'</b><span>'+(e.tema&&e.titulo?esc(e.tema)+' · ':'')+cont+'</span></div></a>';}).join("");
   if(soon&&!g.some(e=>e.data===proxima)) eds.appendChild(soon);
   const sub=document.getElementById("gal-sub");
-  if(sub) sub.innerHTML='<a href="#galeria" data-page="galeria">Ver todos os Chás</a>'+g.map(e=>'<a href="#cha-'+esc(e.id)+'" data-page="cha-'+esc(e.id)+'">'+dataBarras(e.data)+'<small>'+esc(e.tema||"")+'</small></a>').join("");
+  if(sub) sub.innerHTML='<a href="#galeria" data-page="galeria">Ver todos os Chás</a>'+g.map(e=>'<a href="#cha-'+esc(e.id)+'" data-page="cha-'+esc(e.id)+'">'+dataBarras(e.data)+'<small>'+esc((e.titulo||e.tema||"").replace(/ · \d{2}\/\d{2}\/\d{4}$/,""))+'</small></a>').join("");
   document.querySelectorAll('.page[id^="p-cha-"]').forEach(x=>x.remove());
   const antes=document.getElementById("p-convide");
   g.forEach(e=>{const d=document.createElement("div"); d.className="page"; d.id="p-cha-"+e.id;
